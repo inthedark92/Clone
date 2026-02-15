@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     'channels',
 
     'apps.users',
-    'apps.characters',
     'apps.battles',
     'apps.items',
     'apps.core',
@@ -47,7 +46,7 @@ ROOT_URLCONF = 'valcnut.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'frontend/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -105,3 +104,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'game_index'
+LOGOUT_REDIRECT_URL = 'index'

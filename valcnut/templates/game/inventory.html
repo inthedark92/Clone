@@ -1,0 +1,35 @@
+{% extends 'game/game_base.html' %}
+{% block location_title %}Рюкзак{% endblock %}
+{% block location_content %}
+<p>Здесь хранятся ваши трофеи и снаряжение.</p>
+<div style="margin-top: 20px;">
+    {% if items %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid #4d4d4d;">
+                    <th style="text-align: left; padding: 10px;">Предмет</th>
+                    <th style="text-align: left; padding: 10px;">Тип</th>
+                    <th style="text-align: left; padding: 10px;">Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv_item in items %}
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px;">{{ inv_item.item.name }}</td>
+                    <td style="padding: 10px;">{{ inv_item.item.get_item_type_display }}</td>
+                    <td style="padding: 10px;">
+                        {% if inv_item.is_equipped %}
+                            <span style="color: #00ff00;">Надето ({{ inv_item.slot }})</span>
+                        {% else %}
+                            <button class="btn" style="padding: 5px 10px; font-size: 10px;">Надеть</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Ваш рюкзак пуст.</p>
+    {% endif %}
+</div>
+{% endblock %}

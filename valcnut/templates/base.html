@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Valcnut - Viking MMORPG{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body { background-color: #1a1a1a; color: #d4c5a1; font-family: 'Verdana', sans-serif; margin: 0; }
+        header { background-color: #2b2b2b; padding: 20px; text-align: center; border-bottom: 2px solid #8b0000; }
+        h1 { color: #8b0000; letter-spacing: 5px; margin: 0; }
+        .container { max-width: 1000px; margin: 20px auto; background-color: #262626; padding: 20px; border: 1px solid #4d4d4d; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .nav-links { margin-top: 15px; }
+        .nav-links a { color: #8b7355; text-decoration: none; margin: 0 15px; font-weight: bold; }
+        .nav-links a:hover { color: #8b0000; }
+        .btn { background-color: #4a3c28; color: #d4c5a1; border: 1px solid #8b7355; padding: 10px 20px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: bold; }
+        .btn:hover { background-color: #8b0000; color: white; }
+        input[type="text"], input[type="password"], input[type="email"] { background-color: #333; color: #d4c5a1; border: 1px solid #4a3c28; padding: 10px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+        .errorlist { color: #ff4d4d; list-style: none; padding: 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>VALCNUT</h1>
+        <div class="nav-links">
+            <a href="{% url 'index' %}">Главная</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'game_index' %}">В Игру</a>
+                <a href="{% url 'logout' %}">Выйти ({{ user.username }})</a>
+            {% else %}
+                <a href="{% url 'login' %}">Вход</a>
+                <a href="{% url 'register' %}">Регистрация</a>
+            {% endif %}
+        </div>
+    </header>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

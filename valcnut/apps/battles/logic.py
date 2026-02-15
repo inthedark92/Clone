@@ -3,12 +3,9 @@ from .engine import BattleEngine
 class BattleLogic:
     def __init__(self, battle, participants):
         self.battle = battle
-        self.participants = {p.character_id: p for p in participants if p.character_id}
+        self.participants = {p.user_id: p for p in participants if p.user_id}
 
     def process_turn(self, actions):
-        """
-        actions: { character_id: { "attack": HitZone, "blocks": [HitZone, HitZone] } }
-        """
         turn_logs = []
         ids = list(self.participants.keys())
         if len(ids) != 2:

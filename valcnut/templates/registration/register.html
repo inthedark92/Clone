@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация - Valcnut{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 0 auto;">
+    <h2>Создание персонажа</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">Создать и войти</button>
+    </form>
+    <p style="margin-top: 20px;">Уже есть персонаж? <a href="{% url 'login' %}" style="color: #8b7355;">Войти</a></p>
+</div>
+{% endblock %}

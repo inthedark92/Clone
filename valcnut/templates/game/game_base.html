@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Valcnut - {% block location_name %}{% endblock %}</title>
+    <style>
+        body { background-color: #1a1a1a; color: #d4c5a1; font-family: 'Verdana', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+
+        /* Top Panel */
+        #top-panel { background-color: #2b2b2b; border-bottom: 2px solid #8b0000; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .stats-item { margin-right: 20px; display: inline-block; }
+        .hp-bar { color: #ff4d4d; font-weight: bold; }
+        .mp-bar { color: #4d94ff; font-weight: bold; }
+        .money-gold { color: #ffd700; }
+        .money-silver { color: #c0c0c0; }
+
+        /* Main Layout */
+        #game-container { display: flex; flex: 1; overflow: hidden; }
+
+        /* Left Navigation */
+        #left-nav { width: 200px; background-color: #262626; border-right: 1px solid #4d4d4d; padding: 20px; display: flex; flex-direction: column; }
+        #left-nav a { color: #8b7355; text-decoration: none; padding: 10px; border-bottom: 1px solid #333; font-weight: bold; }
+        #left-nav a:hover { background-color: #333; color: #8b0000; }
+        #left-nav a.active { color: #d4c5a1; background-color: #8b0000; }
+
+        /* Content Area */
+        #content-area { flex: 1; padding: 20px; overflow-y: auto; background-color: #1a1a1a; }
+        .location-title { border-bottom: 1px solid #8b0000; margin-bottom: 20px; padding-bottom: 10px; color: #8b0000; }
+
+        /* Chat (optional) */
+        #chat-panel { width: 300px; background-color: #262626; border-left: 1px solid #4d4d4d; padding: 10px; display: flex; flex-direction: column; }
+        #chat-log { flex: 1; background-color: #111; border: 1px solid #333; padding: 5px; font-size: 12px; overflow-y: scroll; margin-bottom: 5px; }
+        #chat-input { background: #333; color: #ccc; border: 1px solid #444; padding: 5px; }
+    </style>
+</head>
+<body>
+    <div id="top-panel">
+        <div>
+            <span class="stats-item"><strong>{{ user.username }}</strong> [{{ user.level }}]</span>
+            <span class="stats-item">HP: <span class="hp-bar">{{ user.current_hp|floatformat:0 }}/{{ user.max_hp }}</span></span>
+            <span class="stats-item">MP: <span class="mp-bar">{{ user.current_mp|floatformat:0 }}/{{ user.max_mp }}</span></span>
+        </div>
+        <div>
+            <span class="stats-item money-gold">{{ user.gold }} золота</span>
+            <span class="stats-item money-silver">{{ user.silver }} серебра</span>
+            <a href="{% url 'logout' %}" style="color: #8b7355; text-decoration: none; font-size: 12px;">Выйти</a>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <nav id="left-nav">
+            <a href="{% url 'inventory' %}">Рюкзак</a>
+            <a href="{% url 'location' 'central_square' %}">Центральная Площадь</a>
+            <a href="{% url 'location' 'arena' %}">Арена</a>
+            <a href="{% url 'location' 'tavern' %}">Таверна "У Одина"</a>
+            <a href="{% url 'location' 'market' %}">Рынок</a>
+            <a href="{% url 'location' 'clan_hall' %}">Зал Кланов</a>
+            <a href="{% url 'location' 'forest' %}">Темный Лес</a>
+            <a href="{% url 'location' 'bank' %}">Банк Вальхаллы</a>
+        </nav>
+
+        <main id="content-area">
+            <h2 class="location-title">{% block location_title %}{% endblock %}</h2>
+            {% block location_content %}{% endblock %}
+        </main>
+
+        <aside id="chat-panel">
+            <div id="chat-log">
+                <div>[Система]: Добро пожаловать в Валькнут!</div>
+            </div>
+            <input type="text" id="chat-input" placeholder="Сообщение...">
+        </aside>
+    </div>
+</body>
+</html>

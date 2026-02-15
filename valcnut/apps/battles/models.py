@@ -1,11 +1,11 @@
 from django.db import models
-from apps.characters.models import Character
+from django.conf import settings
 
 class Battle(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('in_progress', 'In Progress'),
-        ('finished', 'Finished'),
+        ('pending', 'Ожидание'),
+        ('in_progress', 'В процессе'),
+        ('finished', 'Завершен'),
     )
     TYPE_CHOICES = (
         ('pvp', 'PvP'),
@@ -20,7 +20,7 @@ class Battle(models.Model):
 
 class BattleParticipant(models.Model):
     battle = models.ForeignKey(Battle, on_delete=models.CASCADE, related_name='participants')
-    character = models.ForeignKey(Character, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     npc_id = models.CharField(max_length=100, null=True, blank=True)
     team = models.IntegerField()
     hp_snapshot = models.IntegerField()
