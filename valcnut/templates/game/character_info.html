@@ -1,0 +1,68 @@
+{% extends 'game/game_base.html' %}
+{% load custom_filters %}
+
+{% block location_title %}Инфо персонажа: {{ player.username }}{% endblock %}
+
+{% block location_content %}
+<div class="character-wrapper" style="color: #ccc; font-family: 'Cinzel', serif;">
+    <div class="top-section" style="display: flex; gap: 20px; border-bottom: 1px solid #444; padding-bottom: 20px;">
+        <!-- Left Column: Attributes -->
+        <div class="attributes-column" style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px;">
+            <h3 style="color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 5px;">Характеристики</h3>
+            <p>Сила: <b>{{ player.strength }}</b></p>
+            <p>Ловкость: <b>{{ player.agility }}</b></p>
+            <p>Интуиция: <b>{{ player.intuition }}</b></p>
+            <p>Выносливость: <b>{{ player.endurance }}</b></p>
+            <p>Интеллект: <b>{{ player.intelligence }}</b></p>
+            <p>Мудрость: <b>{{ player.wisdom }}</b></p>
+            <p>Дух: <b>{{ player.spirit }}</b></p>
+        </div>
+
+        <!-- Right Column: Statistics -->
+        <div class="statistics-column" style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px;">
+            <h3 style="color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 5px;">Параметры и Статистика</h3>
+            <div class="stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <p>Уровень: <b>{{ player.level }}</b></p>
+                    <p>Опыт: <b>{{ player.exp }}</b></p>
+                    <p>Подуровни: <b>{{ player.sub_levels_completed }}</b></p>
+                </div>
+                <div style="border-left: 1px solid #444; padding-left: 10px;">
+                    <p style="color: #aaa;">Бои с монстрами:</p>
+                    <p>Победы: <b style="color: #4caf50;">{{ player.monster_wins }}</b></p>
+                    <p>Ничьи: <b style="color: #ffeb3b;">{{ player.monster_draws }}</b></p>
+                    <p>Поражения: <b style="color: #f44336;">{{ player.monster_losses }}</b></p>
+                    <hr style="border: 0; border-top: 1px solid #444;">
+                    <p style="color: #aaa;">Бои с игроками:</p>
+                    <p>Победы: <b style="color: #4caf50;">{{ player.player_wins }}</b></p>
+                    <p>Ничьи: <b style="color: #ffeb3b;">{{ player.player_draws }}</b></p>
+                    <p>Поражения: <b style="color: #f44336;">{{ player.player_losses }}</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Section: Derived Stats -->
+    <div class="derived-section" style="margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px;">
+        <h3 style="color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 5px;">Боевые Модификаторы</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <div>
+                <p>Урон: <b>{{ player.damage_range }}</b></p>
+                <p>Броня: <b>{{ player.get_battle_stats.armor }}</b></p>
+            </div>
+            <div>
+                <p>Уворот: <b>{{ player.evasion }}</b></p>
+                <p>Крит: <b>{{ player.critical_chance }}</b></p>
+            </div>
+            <div>
+                <p>Защита: <b>{{ player.defense }}</b></p>
+                <p>HP: <b>{{ player.current_hp|floatformat:0 }} / {{ player.max_hp }}</b></p>
+            </div>
+            <div>
+                <p>MP: <b>{{ player.current_mp|floatformat:0 }} / {{ player.max_mp }}</b></p>
+                <p>Клан: <b>{{ player.clan|default:"Нет" }}</b></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

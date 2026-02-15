@@ -1,0 +1,112 @@
+{% extends 'game/game_base.html' %}
+{% load custom_filters %}
+
+{% block location_title %}Персонаж: {{ player.username }}{% endblock %}
+
+{% block location_content %}
+<div class="character-wrapper" style="color: #ccc; font-family: 'Cinzel', serif;">
+    <div class="top-section" style="display: flex; gap: 20px; border-bottom: 1px solid #444; padding-bottom: 20px;">
+        <!-- Left Column: Attributes -->
+        <div class="attributes-column" style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px;">
+            <h3 style="color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 5px;">Характеристики</h3>
+            <p>Свободные очки: <b id="stat-points" style="color: #fff;">{{ player.stat_points }}</b></p>
+
+            {% for stat_id, stat_name, unlock_lvl in stats_config %}
+            <div class="stat-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span>{{ stat_name }}: <b id="{{ stat_id }}">{{ player|attr:stat_id }}</b></span>
+                <button class="inc-btn" data-stat="{{ stat_id }}"
+                    {% if player.level < unlock_lvl %}disabled title="Доступно с {{ unlock_lvl }} уровня"{% endif %}
+                    style="background: #8b0000; color: #fff; border: 1px solid #555; cursor: pointer; padding: 2px 8px;">+</button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Right Column: Statistics -->
+        <div class="statistics-column" style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px;">
+            <h3 style="color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 5px;">Параметры и Статистика</h3>
+            <div class="stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <p>Уровень: <b>{{ player.level }}</b></p>
+                    <p>Опыт: <b>{{ player.exp }} / {{ next_level_exp }}</b></p>
+                    <p>Подуровни: <b>{{ player.sub_levels_completed }}</b></p>
+                    <p>Прогресс подуровня: <b>{{ player.sub_level_progress_percent }}%</b></p>
+                    <p>Всего опыта: <b>{{ player.total_xp }}</b></p>
+                </div>
+                <div style="border-left: 1px solid #444; padding-left: 10px;">
+                    <p style="color: #aaa;">Бои с монстрами:</p>
+                    <p>Победы: <b style="color: #4caf50;">{{ player.monster_wins }}</b></p>
+                    <p>Ничьи: <b style="color: #ffeb3b;">{{ player.monster_draws }}</b></p>
+                    <p>Поражения: <b style="color: #f44336;">{{ player.monster_losses }}</b></p>
+                    <hr style="border: 0; border-top: 1px solid #444;">
+                    <p style="color: #aaa;">Бои с игроками:</p>
+                    <p>Победы: <b style="color: #4caf50;">{{ player.player_wins }}</b></p>
+                    <p>Ничьи: <b style="color: #ffeb3b;">{{ player.player_draws }}</b></p>
+                    <p>Поражения: <b style="color: #f44336;">{{ player.player_losses }}</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Section: Derived Stats -->
+    <div class="derived-section" style="margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px;">
+        <h3 style="color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 5px;">Боевые Модификаторы</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <div>
+                <p>Урон: <b id="damage-val">{{ player.damage_range }}</b></p>
+                <p>Броня: <b id="armor-val">{{ player.get_battle_stats.armor }}</b></p>
+            </div>
+            <div>
+                <p>Уворот: <b id="evasion-val">{{ player.evasion }}</b></p>
+                <p>Крит: <b id="crit-val">{{ player.critical_chance }}</b></p>
+            </div>
+            <div>
+                <p>Защита: <b id="defense-val">{{ player.defense }}</b></p>
+                <p>HP: <b id="hp-display">{{ player.current_hp|floatformat:0 }} / {{ player.max_hp }}</b></p>
+            </div>
+            <div>
+                <p>MP: <b id="mp-display">{{ player.current_mp|floatformat:0 }} / {{ player.max_mp }}</b></p>
+                <p>Клан: <b>{{ player.clan|default:"Нет" }}</b></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.inc-btn').forEach(btn => {
+    btn.onclick = function() {
+        const stat = this.dataset.stat;
+        const formData = new FormData();
+        formData.append('stat', stat);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch('{% url "increase_stat" %}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(data.stat).innerText = data.new_val;
+                document.getElementById('stat-points').innerText = data.stat_points;
+                document.getElementById('hp-display').innerText = Math.floor(data.current_hp) + ' / ' + data.max_hp;
+                document.getElementById('mp-display').innerText = Math.floor(data.current_mp) + ' / ' + data.max_mp;
+
+                // Update derived stats if elements exist
+                if (data.damage) document.getElementById('damage-val').innerText = data.damage;
+                if (data.evasion) document.getElementById('evasion-val').innerText = data.evasion;
+                if (data.crit) document.getElementById('crit-val').innerText = data.crit;
+                if (data.defense) document.getElementById('defense-val').innerText = data.defense;
+
+                // Also update top panel if elements exist
+                const topHp = document.querySelector('.hp-bar');
+                const topMp = document.querySelector('.mp-bar');
+                if (topHp) topHp.innerText = Math.floor(data.current_hp) + '/' + data.max_hp;
+                if (topMp) topMp.innerText = Math.floor(data.current_mp) + '/' + data.max_mp;
+            } else {
+                alert(data.error);
+            }
+        });
+    };
+});
+</script>
+{% endblock %}

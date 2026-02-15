@@ -1,13 +1,39 @@
 {% extends 'game/game_base.html' %}
+
 {% block location_title %}{{ title }}{% endblock %}
+
 {% block location_content %}
-<p>Торговцы со всего мира привезли сюда лучшие мечи, щиты и руны.</p>
-<div style="margin-top: 20px;">
-    <p>Доступные категории:</p>
-    <ul>
-        <li><a href="#" style="color: #8b7355;">Оружие</a></li>
-        <li><a href="#" style="color: #8b7355;">Броня</a></li>
-        <li><a href="#" style="color: #8b7355;">Расходники</a></li>
-    </ul>
+<div class="market-wrapper" style="position: relative;">
+    <div style="position: absolute; right: 0; top: -50px;">
+        <a href="{% url 'location' 'central_square' %}" style="background: #8b0000; color: #fff; text-decoration: none; padding: 5px 15px; border-radius: 5px; font-weight: bold;">Выйти из магазина</a>
+    </div>
+
+    <div class="market-filters" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{% url 'market' %}" class="filter-btn {% if not current_cat %}active{% endif %}">Все</a>
+        {% for cat_id, cat_name in categories %}
+            <a href="{% url 'market' %}?category={{ cat_id }}" class="filter-btn {% if request.GET.category == cat_id %}active{% endif %}">{{ cat_name }}</a>
+        {% endfor %}
+    </div>
+
+    <div class="items-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+        {% for item in items %}
+        <div class="item-card" style="background: #222; border: 1px solid #444; padding: 15px; border-radius: 5px; text-align: center;">
+            <div style="font-weight: bold; color: #d4af37;">{{ item.name }}</div>
+            <div style="font-size: 12px; color: #888; margin: 5px 0;">{{ item.get_item_type_display }}</div>
+            <div style="margin: 10px 0;">
+                <span style="color: #c0c0c0;">{{ item.price_silver }} серебра</span>
+            </div>
+            <form method="POST" action="{% url 'buy_item' item.id %}">
+                {% csrf_token %}
+                <button type="submit" style="background: #4caf50; color: #fff; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px;">Купить</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
 </div>
+
+<style>
+.filter-btn { background: #333; color: #ccc; text-decoration: none; padding: 5px 10px; border-radius: 3px; border: 1px solid #444; font-size: 12px; }
+.filter-btn.active { background: #8b0000; color: #fff; }
+</style>
 {% endblock %}

@@ -1,0 +1,45 @@
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+Listen failure: Couldn't listen on 0.0.0.0:8000: [Errno 98] Address already in use.
+HTTP GET /login/ 200 [0.06, 127.0.0.1:38050]
+HTTP GET /static/css/style.css 404 [0.02, 127.0.0.1:38050]
+HTTP POST /login/ 302 [1.08, 127.0.0.1:38050]
+HTTP GET /game/ 200 [0.02, 127.0.0.1:38050]
+WebSocket HANDSHAKING /ws/chat/ [127.0.0.1:38056]
+WebSocket CONNECT /ws/chat/ [127.0.0.1:38056]
+WebSocket HANDSHAKING /ws/online/ [127.0.0.1:38066]
+WebSocket CONNECT /ws/online/ [127.0.0.1:38066]
+HTTP GET /game/items/inventory/ 200 [0.14, 127.0.0.1:38050]
+WebSocket DISCONNECT /ws/chat/ [127.0.0.1:38056]
+WebSocket DISCONNECT /ws/online/ [127.0.0.1:38066]
+WebSocket HANDSHAKING /ws/chat/ [127.0.0.1:38080]
+WebSocket CONNECT /ws/chat/ [127.0.0.1:38080]
+WebSocket HANDSHAKING /ws/online/ [127.0.0.1:38086]
+WebSocket CONNECT /ws/online/ [127.0.0.1:38086]
+HTTP GET /game/bank/ 200 [0.03, 127.0.0.1:38050]
+WebSocket DISCONNECT /ws/chat/ [127.0.0.1:38080]
+WebSocket DISCONNECT /ws/online/ [127.0.0.1:38086]
+WebSocket HANDSHAKING /ws/chat/ [127.0.0.1:38098]
+WebSocket CONNECT /ws/chat/ [127.0.0.1:38098]
+WebSocket HANDSHAKING /ws/online/ [127.0.0.1:38108]
+WebSocket CONNECT /ws/online/ [127.0.0.1:38108]
+HTTP GET /game/tavern/ 200 [0.02, 127.0.0.1:38050]
+WebSocket DISCONNECT /ws/chat/ [127.0.0.1:38098]
+WebSocket DISCONNECT /ws/online/ [127.0.0.1:38108]
+WebSocket HANDSHAKING /ws/chat/ [127.0.0.1:38124]
+WebSocket CONNECT /ws/chat/ [127.0.0.1:38124]
+WebSocket HANDSHAKING /ws/online/ [127.0.0.1:38130]
+WebSocket CONNECT /ws/online/ [127.0.0.1:38130]
+WebSocket DISCONNECT /ws/chat/ [127.0.0.1:38124]
+WebSocket DISCONNECT /ws/online/ [127.0.0.1:38130]
+Performing system checks...
+
+February 15, 2026 - 17:21:09
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.

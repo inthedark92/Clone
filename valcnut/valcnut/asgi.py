@@ -4,6 +4,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.urls import path
 from apps.battles.consumers import BattleConsumer
+from apps.core.consumers import ChatConsumer, OnlineConsumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'valcnut.settings')
 
@@ -12,6 +13,8 @@ application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter([
             path("ws/battle/<int:user_id>/", BattleConsumer.as_asgi()),
+            path("ws/chat/", ChatConsumer.as_asgi()),
+            path("ws/online/", OnlineConsumer.as_asgi()),
         ])
     ),
 })

@@ -1,0 +1,24 @@
+{% extends 'game/game_base.html' %}
+
+{% block location_title %}{{ title }}{% endblock %}
+
+{% block location_content %}
+<div class="mine-description">
+    <p>В глубине шахты слышны удары кирок. Здесь добывают ценные металлы и редкие камни.</p>
+</div>
+
+<div class="mine-actions" style="margin-top: 20px;">
+    <form method="POST" action="{% url 'extract_resource' %}">
+        {% csrf_token %}
+        <button type="submit" style="background: #444; color: #fff; border: 1px solid #c0c0c0; padding: 15px 30px; cursor: pointer; font-weight: bold; font-size: 16px;">Работать в шахте</button>
+    </form>
+</div>
+
+<div id="extraction-result" style="margin-top: 20px; font-weight: bold; color: #ffd700;">
+    {% if messages %}
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

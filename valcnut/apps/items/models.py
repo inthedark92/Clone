@@ -11,11 +11,25 @@ class Item(models.Model):
         ('shield', 'Щит'),
         ('ring', 'Кольцо'),
         ('amulet', 'Амулет'),
+        ('belt', 'Пояс'),
+        ('bracers', 'Наручи'),
+        ('cloak', 'Плащ'),
         ('potion', 'Зелье'),
+        ('scroll', 'Свиток'),
+        ('quest', 'Квестовый предмет'),
+        ('gift', 'Подарок'),
+    )
+    CATEGORY_CHOICES = (
+        ('equipment', 'Экипировка'),
+        ('elixirs', 'Эликсиры'),
+        ('scrolls', 'Свитки'),
+        ('quest', 'Квестовые предметы'),
+        ('gifts', 'Подарки'),
     )
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     item_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='equipment')
 
     req_level = models.IntegerField(default=1)
     req_strength = models.IntegerField(default=0)
@@ -30,6 +44,9 @@ class Item(models.Model):
     bonus_min_dmg = models.IntegerField(default=0)
     bonus_max_dmg = models.IntegerField(default=0)
 
+    restore_hp = models.IntegerField(default=0)
+    restore_mp = models.IntegerField(default=0)
+
     price_gold = models.IntegerField(default=0)
     price_silver = models.IntegerField(default=0)
 
@@ -42,5 +59,31 @@ class InventoryItem(models.Model):
     is_equipped = models.BooleanField(default=False)
     slot = models.CharField(max_length=50, null=True, blank=True)
 
+    durability_current = models.IntegerField(default=0)
+    durability_max = models.IntegerField(default=100)
+    enhancement_level = models.IntegerField(default=0)
+
     def __str__(self):
-        return f"{self.user.username} - {self.item.name}"
+        return f"{self.user.username} - {self.item.name} (+{self.enhancement_level})"
+
+    @property
+    def is_active(self):
+        return self.durability_current < self.durability_max
+
+    def get_bonus(self, attr):
+        if not self.is_active:
+            return 0
+        base_val = getattr(self.item, attr, 0)
+        if base_val > 0:
+            # Each enhancement level adds +1 to the stat
+            return base_val + self.enhancement_level
+        return base_val
+
+class CommissionItem(models.Model):
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='commission_items')
+    inventory_item = models.OneToOneField(InventoryItem, on_delete=models.CASCADE)
+    price_silver = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.inventory_item.item.name} for {self.price_silver} silver"
