@@ -1,8 +1,8 @@
-django>=6.0.2
+django>=5.1.0
 djangorestframework
-channels>=4.2.2
+channels>=4.2.0
 channels-redis
-daphne>=4.2.1
+daphne>=4.2.0
 djangorestframework-simplejwt
 django-cors-headers
 pydantic-settings
