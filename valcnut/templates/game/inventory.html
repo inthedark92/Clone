@@ -6,47 +6,56 @@
 <div class="inventory-wrapper" style="color: #ccc; font-family: 'Cinzel', serif;">
 
     <!-- Equipment Grid -->
-    <div class="equipment-section" style="display: flex; gap: 20px; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; border: 1px solid #444; margin-bottom: 20px;">
-        <!-- Left Slots -->
-        <div class="slots-column" style="display: grid; grid-template-rows: repeat(5, 60px); gap: 10px;">
-            <div class="slot" title="Серьги 1"></div>
-            <div class="slot" title="Шлем"></div>
-            <div class="slot" title="Амулет"></div>
-            <div class="slot" title="Наручи 1"></div>
-            <div class="slot" title="Оружие 1"></div>
-        </div>
+    <div class="equipment-section" style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; border: 1px solid #444; margin-bottom: 20px;">
+        <div class="equipment-grid" style="display: grid; grid-template-columns: 1fr 220px 1fr; gap: 10px; align-items: start;">
 
-        <!-- Center: Character Icon -->
-        <div class="char-icon-container" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
-            <div class="char-icon" style="width: 150px; height: 250px; background: #222; border: 2px solid #d4af37; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #d4af37;">
-                ᚦ
+            <!-- Left Side (top to bottom) -->
+            <div class="left-slots" style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                <div class="slot-container"><span class="slot-label">Пояс</span><div class="slot" title="Пояс"></div></div>
+                <div class="slot-container"><span class="slot-label">Рубаха</span><div class="slot" title="Рубаха"></div></div>
+                <div class="slot-container"><span class="slot-label">Латы</span><div class="slot" title="Латы"></div></div>
+                <div class="slot-container"><span class="slot-label">Плащ</span><div class="slot" title="Плащ"></div></div>
+                <div class="slot-container"><span class="slot-label">Перчатки</span><div class="slot" title="Перчатки"></div></div>
+                <div class="slot-container"><span class="slot-label">Браслет (л)</span><div class="slot" title="Браслет (лев)"></div></div>
+                <div class="slot small" title="Кольцо"></div>
+                <div class="slot small" title="Кольцо"></div>
+                <div class="slot small" title="Кольцо"></div>
+                <div class="slot-container"><span class="slot-label">Ожерелье</span><div class="slot" title="Ожерелье"></div></div>
             </div>
-            <div style="margin-top: 10px; font-weight: bold; color: #d4af37;">{{ user.username }}</div>
 
-            <!-- Mid Slots (e.g. Armor, Belt) -->
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div class="slot" title="Броня"></div>
-                <div class="slot" title="Пояс"></div>
-                <div class="slot" title="Поножи"></div>
+            <!-- Center Area -->
+            <div class="center-area" style="display: flex; flex-direction: column; align-items: center; position: relative;">
+                <div class="slot-container" style="margin-bottom: 10px;">
+                    <div class="slot" title="Шлем"></div>
+                    <span class="slot-label-bottom">Шлем</span>
+                </div>
+
+                <div class="char-image" style="width: 180px; height: 320px; border: 2px solid #d4af37; background: #111; display: flex; align-items: center; justify-content: center; font-size: 80px; color: #d4af37; border-radius: 5px;">
+                    ᚦ
+                </div>
+                <div style="margin-top: 5px; font-weight: bold; color: #d4af37;">{{ user.username }}</div>
+
+                <!-- Bottom & Sphere -->
+                <div class="bottom-area" style="display: flex; gap: 10px; margin-top: 15px; position: relative; width: 100%; justify-content: center;">
+                    <div class="slot sphere-slot" title="Сфера" style="position: absolute; right: 0; top: -50px;"></div>
+                    <div class="slot elixir-slot" title="Эликсир 1"></div>
+                    <div class="slot elixir-slot" title="Эликсир 2"></div>
+                    <div class="slot elixir-slot" title="Эликсир 3"></div>
+                </div>
             </div>
-        </div>
 
-        <!-- Right Slots -->
-        <div class="slots-column" style="display: grid; grid-template-rows: repeat(5, 60px); gap: 10px;">
-            <div class="slot" title="Серьги 2"></div>
-            <div class="slot" title="Накидка"></div>
-            <div class="slot" title="Перчатки"></div>
-            <div class="slot" title="Наручи 2"></div>
-            <div class="slot" title="Оружие 2 / Щит"></div>
-        </div>
+            <!-- Right Side (top to bottom) -->
+            <div class="right-slots" style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
+                <div class="slot-container"><div class="slot" title="Серьги"></div><span class="slot-label">Серьги</span></div>
+                <div class="slot small" title="Кольцо"></div>
+                <div class="slot small" title="Кольцо"></div>
+                <div class="slot small" title="Кольцо"></div>
+                <div class="slot-container"><div class="slot" title="Браслет (п)"></div><span class="slot-label">Браслет (прав)</span></div>
+                <div class="slot-container"><div class="slot" title="Наручи"></div><span class="slot-label">Наручи</span></div>
+                <div class="slot-container"><div class="slot" title="Поножи"></div><span class="slot-label">Поножи</span></div>
+                <div class="slot-container"><div class="slot" title="Сапоги"></div><span class="slot-label">Сапоги</span></div>
+            </div>
 
-        <!-- Far Right: Rings & Boots -->
-        <div class="slots-column" style="display: grid; grid-template-rows: repeat(5, 60px); gap: 10px;">
-            <div class="slot" title="Кольцо 1"></div>
-            <div class="slot" title="Кольцо 2"></div>
-            <div class="slot" title="Кольцо 3"></div>
-            <div class="slot" title="Кольцо 4"></div>
-            <div class="slot" title="Сапоги"></div>
         </div>
     </div>
 
@@ -81,8 +90,14 @@
 </div>
 
 <style>
-.slot { width: 50px; height: 50px; background: #333; border: 1px solid #555; border-radius: 5px; cursor: pointer; }
-.slot:hover { border-color: #d4af37; }
+.slot { width: 45px; height: 45px; background: #222; border: 1px solid #555; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.slot:hover { border-color: #d4af37; box-shadow: 0 0 5px #d4af37; }
+.slot.small { width: 30px; height: 30px; }
+.slot-container { display: flex; align-items: center; gap: 5px; }
+.slot-label { font-size: 10px; color: #8b7355; font-weight: bold; }
+.slot-label-bottom { font-size: 10px; color: #d4af37; font-weight: bold; margin-top: 2px; }
+.sphere-slot { border-radius: 50%; border: 1px dashed #d4af37; }
+.elixir-slot { border-color: #4caf50; }
 .inv-tab { padding: 8px 20px; cursor: pointer; background: #333; margin-right: 2px; border-radius: 5px 5px 0 0; font-size: 14px; }
 .inv-tab.active { background: #8b0000; color: #fff; }
 </style>

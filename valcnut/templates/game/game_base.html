@@ -29,15 +29,17 @@
         #right-nav a.active { color: #d4c5a1; background-color: #8b0000; }
 
         /* Bottom Panel */
-        #bottom-panel { height: 200px; background-color: #262626; border-top: 2px solid #8b0000; display: flex; }
+        #bottom-panel { height: 300px; background-color: #262626; border-top: 2px solid #8b0000; display: flex; position: relative; }
 
         /* Chat */
-        #chat-container { flex: 1; display: flex; flex-direction: column; padding: 10px; border-right: 1px solid #4d4d4d; position: relative; }
+        #chat-container { flex: 1; display: flex; flex-direction: column; padding: 10px; border-right: 1px solid #4d4d4d; position: relative; transition: width 0.3s; }
         .chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .chat-tabs { display: flex; }
         .chat-tab { padding: 5px 10px; cursor: pointer; background: #333; margin-right: 5px; font-size: 12px; }
         .chat-tab.active { background: #8b0000; color: #fff; }
         #chat-log { flex: 1; background-color: #111; border: 1px solid #333; padding: 5px; font-size: 12px; overflow-y: scroll; margin-bottom: 5px; }
+        #system-log { width: 30%; background-color: #0a0a0a; border: 1px solid #444; padding: 5px; font-size: 11px; overflow-y: scroll; display: none; }
+        .system-msg { color: #888; border-bottom: 1px solid #222; margin-bottom: 2px; }
         #chat-input { background: #333; color: #ccc; border: 1px solid #444; padding: 5px; width: 100%; box-sizing: border-box; }
 
         /* Online Block */
@@ -89,11 +91,11 @@
             <a href="{% url 'inventory' %}">Инвентарь</a>
             <a href="{% url 'location' 'central_square' %}">Центральная Площадь</a>
             <a href="{% url 'location' 'arena' %}">Арена</a>
-            <a href="{% url 'location' 'tavern' %}">Таверна "У Одина"</a>
+            <a href="{% url 'tavern' %}">Таверна "У Одина"</a>
             <a href="{% url 'location' 'market' %}">Рынок</a>
             <a href="{% url 'location' 'clan_hall' %}">Зал Кланов</a>
             <a href="{% url 'location' 'forest' %}">Темный Лес</a>
-            <a href="{% url 'location' 'bank' %}">Банк Вальхаллы</a>
+            <a href="{% url 'bank' %}">Банк Вальхаллы</a>
             <a href="{% url 'location' 'forge' %}">Кузница</a>
             <a href="{% url 'location' 'mine' %}">Шахта</a>
         </nav>
@@ -107,6 +109,8 @@
                     <div class="chat-tab" data-channel="location">Локация</div>
                     <div class="chat-tab" data-channel="trade">Торговля</div>
                     <div class="chat-tab" data-channel="group">Группа</div>
+                    <div class="chat-tab" data-channel="private">Личное</div>
+                    <div class="chat-tab" id="system-toggle" style="color: #ff9800;">Системки</div>
                     {% if user.clan %}<div class="chat-tab" data-channel="clan">Клан</div>{% endif %}
                     {% if user.alliance %}<div class="chat-tab" data-channel="alliance">Альянс</div>{% endif %}
                 </div>
@@ -114,12 +118,15 @@
                     <span id="day-night"></span> | <span id="server-time"></span> (МСК)
                 </div>
             </div>
-            <div id="chat-log"></div>
+            <div style="display: flex; flex: 1; overflow: hidden;">
+                <div id="chat-log" style="flex: 1;"></div>
+                <div id="system-log"></div>
+            </div>
             <div class="chat-controls" style="display: flex; gap: 5px; margin-bottom: 5px;">
-                <button class="chat-btn" title="Инфо Клана">🛡️</button>
-                <button class="chat-btn" title="Почта">✉️</button>
-                <button class="chat-btn" title="Друзья">👥</button>
-                <button class="chat-btn" title="Смайлы">😊</button>
+                <div id="private-recipient-display" style="display: none; background: #8b0000; padding: 2px 5px; font-size: 12px; align-items: center;">
+                    Кому: <span id="recipient-name"></span>
+                    <span id="clear-recipient" style="margin-left: 5px; cursor: pointer;">×</span>
+                </div>
                 <input type="text" id="chat-input" placeholder="Сообщение..." style="flex: 1;">
             </div>
         </div>
@@ -139,8 +146,18 @@
         .chat-btn:hover { background: #444; }
     </style>
 
+    <!-- Context Menu -->
+    <div id="player-context-menu" style="display: none; position: fixed; background: #2b2b2b; border: 1px solid #8b0000; z-index: 1000; box-shadow: 2px 2px 5px rgba(0,0,0,0.5);">
+        <div class="menu-item" id="menu-send-msg" style="padding: 8px 15px; cursor: pointer; border-bottom: 1px solid #444;">Написать сообщение</div>
+        <div class="menu-item" id="menu-add-friend" style="padding: 8px 15px; cursor: pointer; border-bottom: 1px solid #444;">Добавить в друзья</div>
+        <div class="menu-item" id="menu-char-info" style="padding: 8px 15px; cursor: pointer;">Инфо персонажа</div>
+    </div>
+
+    <style>
+        .menu-item:hover { background: #8b0000; color: white; }
+    </style>
+
     <script>
-        // Server time and Day/Night logic
         function updateServerTime() {
             const now = new Date();
             // Convert to Moscow time (UTC+3)
@@ -162,10 +179,12 @@
         updateServerTime();
 
         const chatLog = document.getElementById('chat-log');
+        const systemLog = document.getElementById('system-log');
         const chatInput = document.getElementById('chat-input');
         const onlineList = document.getElementById('online-list');
         let currentChannel = 'world';
         let currentOnlineTab = 'location';
+        let privateRecipient = null;
 
         const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
         const onlineSocket = new WebSocket('ws://' + window.location.host + '/ws/online/');
@@ -173,9 +192,32 @@
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             if (data.type === 'chat') {
-                if (data.channel === currentChannel || data.channel === 'world') {
+                if (data.channel === 'system') {
                     const msgDiv = document.createElement('div');
-                    msgDiv.innerHTML = `[${data.timestamp}] <b>${data.sender}</b>: ${data.message}`;
+                    msgDiv.className = 'system-msg';
+                    msgDiv.innerHTML = `[${data.timestamp}] ${data.message}`;
+                    systemLog.appendChild(msgDiv);
+                    systemLog.scrollTop = systemLog.scrollHeight;
+                    return;
+                }
+
+                const shouldShow = (data.channel === currentChannel) ||
+                                 (currentChannel === 'world') ||
+                                 (data.channel === 'private' && (data.sender === '{{ user.username }}' || data.recipient === '{{ user.username }}'));
+
+                if (shouldShow) {
+                    const msgDiv = document.createElement('div');
+                    let prefix = `[${data.timestamp}] `;
+                    if (data.channel === 'private') {
+                        if (data.sender === '{{ user.username }}') {
+                            prefix += `<span style="color: #ff9800;">Для [${data.recipient}]</span> `;
+                        } else {
+                            prefix += `<span style="color: #ff9800;">От [${data.sender}]</span> `;
+                        }
+                    } else {
+                        prefix += `<b>${data.sender}</b>: `;
+                    }
+                    msgDiv.innerHTML = `${prefix} ${data.message}`;
                     chatLog.appendChild(msgDiv);
                     chatLog.scrollTop = chatLog.scrollHeight;
                 }
@@ -191,34 +233,93 @@
             }
         };
 
-        function updateOnlineList(users) {
-            onlineList.innerHTML = '';
-            users.forEach(u => {
-                const uDiv = document.createElement('div');
-                uDiv.innerHTML = `${u.username} [${u.level}]`;
-                onlineList.appendChild(uDiv);
-            });
-        }
 
         chatInput.onkeyup = function(e) {
             if (e.keyCode === 13) {
                 const message = chatInput.value;
-                chatSocket.send(JSON.stringify({
+                const payload = {
                     'message': message,
                     'channel': currentChannel
-                }));
+                };
+                if (currentChannel === 'private' && privateRecipient) {
+                    payload['recipient'] = privateRecipient;
+                }
+                chatSocket.send(JSON.stringify(payload));
                 chatInput.value = '';
             }
         };
 
         document.querySelectorAll('.chat-tab').forEach(tab => {
+            if (tab.id === 'system-toggle') {
+                tab.onclick = () => {
+                    const isVisible = systemLog.style.display === 'block';
+                    systemLog.style.display = isVisible ? 'none' : 'block';
+                };
+                return;
+            }
             tab.onclick = () => {
                 document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 currentChannel = tab.dataset.channel;
-                chatLog.innerHTML = ''; // Simplified: clear on switch
+                chatLog.innerHTML = '';
+
+                if (currentChannel === 'private' && privateRecipient) {
+                    document.getElementById('private-recipient-display').style.display = 'flex';
+                } else {
+                    document.getElementById('private-recipient-display').style.display = 'none';
+                }
             };
         });
+
+        // Context Menu Logic
+        const contextMenu = document.getElementById('player-context-menu');
+        let contextTarget = null;
+
+        document.addEventListener('contextmenu', function(e) {
+            const playerEl = e.target.closest('[data-player-name]');
+            if (playerEl) {
+                e.preventDefault();
+                contextTarget = playerEl.dataset.playerName;
+                contextMenu.style.display = 'block';
+                contextMenu.style.left = e.pageX + 'px';
+                contextMenu.style.top = e.pageY + 'px';
+            } else {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', () => contextMenu.style.display = 'none');
+
+        document.getElementById('menu-send-msg').onclick = () => {
+            privateRecipient = contextTarget;
+            currentChannel = 'private';
+            document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-channel="private"]').classList.add('active');
+            document.getElementById('recipient-name').innerText = privateRecipient;
+            document.getElementById('private-recipient-display').style.display = 'flex';
+            chatInput.focus();
+        };
+
+        document.getElementById('menu-char-info').onclick = () => {
+            window.open(`/game/users/character/${contextTarget}/`, '_blank');
+        };
+
+        document.getElementById('clear-recipient').onclick = () => {
+            privateRecipient = null;
+            document.getElementById('private-recipient-display').style.display = 'none';
+        };
+
+        // Update online list to support context menu
+        function updateOnlineList(users) {
+            onlineList.innerHTML = '';
+            users.forEach(u => {
+                const uDiv = document.createElement('div');
+                uDiv.setAttribute('data-player-name', u.username);
+                uDiv.style.cursor = 'context-menu';
+                uDiv.innerHTML = `${u.username} [${u.level}]`;
+                onlineList.appendChild(uDiv);
+            });
+        }
 
         document.querySelectorAll('.online-tab').forEach(tab => {
             tab.onclick = () => {

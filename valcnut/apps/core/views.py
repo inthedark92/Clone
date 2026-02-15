@@ -1,7 +1,77 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .models import BankAccount
+from apps.items.models import Item
 import random
+
+@login_required
+def bank_view(request):
+    bank, created = BankAccount.objects.get_or_create(user=request.user)
+    return render(request, 'game/locations/bank.html', {
+        'bank': bank,
+        'title': 'Банк Вальхаллы'
+    })
+
+@login_required
+def bank_deposit(request):
+    if request.method == 'POST':
+        amount = int(request.POST.get('amount', 0))
+        currency = request.POST.get('currency', 'silver')
+        bank, created = BankAccount.objects.get_or_create(user=request.user)
+
+        if amount <= 0:
+            messages.error(request, "Сумма должна быть больше нуля.")
+        elif currency == 'silver':
+            if request.user.silver >= amount:
+                request.user.silver -= amount
+                bank.balance_silver += amount
+                request.user.save()
+                bank.save()
+                messages.success(request, f"Вы внесли {amount} серебра на счет.")
+            else:
+                messages.error(request, "Недостаточно серебра.")
+        elif currency == 'gold':
+            if request.user.gold >= amount:
+                request.user.gold -= amount
+                bank.balance_gold += amount
+                request.user.save()
+                bank.save()
+                messages.success(request, f"Вы внесли {amount} золота на счет.")
+            else:
+                messages.error(request, "Недостаточно золота.")
+
+    return redirect('bank')
+
+@login_required
+def bank_withdraw(request):
+    if request.method == 'POST':
+        amount = int(request.POST.get('amount', 0))
+        currency = request.POST.get('currency', 'silver')
+        bank, created = BankAccount.objects.get_or_create(user=request.user)
+
+        if amount <= 0:
+            messages.error(request, "Сумма должна быть больше нуля.")
+        elif currency == 'silver':
+            if bank.balance_silver >= amount:
+                bank.balance_silver -= amount
+                request.user.silver += amount
+                bank.save()
+                request.user.save()
+                messages.success(request, f"Вы сняли {amount} серебра со счета.")
+            else:
+                messages.error(request, "Недостаточно серебра на банковском счету.")
+        elif currency == 'gold':
+            if bank.balance_gold >= amount:
+                bank.balance_gold -= amount
+                request.user.gold += amount
+                bank.save()
+                request.user.save()
+                messages.success(request, f"Вы сняли {amount} золота со счета.")
+            else:
+                messages.error(request, "Недостаточно золота на банковском счету.")
+
+    return redirect('bank')
 
 @login_required
 def extract_resource(request):
@@ -24,6 +94,55 @@ def extract_resource(request):
 
     user.save()
     return redirect('location', slug='mine')
+
+@login_required
+def tavern_view(request):
+    category = request.GET.get('category', 'first')
+    # Filter items by custom tavern categories
+    items = Item.objects.filter(category='elixirs', description__icontains=f"category:{category}")
+
+    categories = [
+        ('first', 'Первые блюда'),
+        ('second', 'Вторые блюда'),
+        ('third', 'Третьи блюда'),
+        ('salads', 'Салаты'),
+        ('drinks', 'Напитки'),
+    ]
+
+    return render(request, 'game/locations/tavern.html', {
+        'items': items,
+        'categories': categories,
+        'current_category': category,
+        'title': 'Таверна "У Одина"'
+    })
+
+@login_required
+def tavern_buy(request, item_id):
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity <= 0:
+            messages.error(request, "Количество должно быть больше нуля.")
+            return redirect('tavern')
+
+        item = get_object_or_404(Item, id=item_id)
+        total_cost = item.price_silver * quantity
+
+        if request.user.silver >= total_cost:
+            request.user.silver -= total_cost
+
+            # Restore HP/MP
+            restore_hp = item.restore_hp * quantity
+            restore_mp = item.restore_mp * quantity
+
+            request.user.current_hp = min(request.user.max_hp, request.user.current_hp + restore_hp)
+            request.user.current_mp = min(request.user.max_mp, request.user.current_mp + restore_mp)
+
+            request.user.save()
+            messages.success(request, f"Вы купили и употребили {item.name} ({quantity} шт.). Восстановлено {restore_hp} HP и {restore_mp} MP.")
+        else:
+            messages.error(request, "Недостаточно серебра.")
+
+    return redirect('tavern')
 
 @login_required
 def location_view(request, slug='novice_hall'):

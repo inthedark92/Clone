@@ -44,6 +44,9 @@ class Item(models.Model):
     bonus_min_dmg = models.IntegerField(default=0)
     bonus_max_dmg = models.IntegerField(default=0)
 
+    restore_hp = models.IntegerField(default=0)
+    restore_mp = models.IntegerField(default=0)
+
     price_gold = models.IntegerField(default=0)
     price_silver = models.IntegerField(default=0)
 

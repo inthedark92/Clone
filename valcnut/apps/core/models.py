@@ -27,8 +27,11 @@ class ChatMessage(models.Model):
         ('group', 'Группа'),
         ('clan', 'Клан'),
         ('alliance', 'Альянс'),
+        ('private', 'Личный'),
+        ('system', 'Системный'),
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_messages')
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_messages', null=True, blank=True)
     text = models.TextField()
     channel = models.CharField(max_length=20, choices=CHANNEL_CHOICES, default='world')
     location = models.CharField(max_length=100, null=True, blank=True)

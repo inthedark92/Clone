@@ -1,8 +1,44 @@
 {% extends 'game/game_base.html' %}
+
 {% block location_title %}{{ title }}{% endblock %}
+
 {% block location_content %}
-<p>Шум, смех и запах жареного кабана. Хозяин заведения всегда рад гостям (если у них есть монеты).</p>
-<div style="margin-top: 20px;">
-    <button class="btn">Заказать медовуху (10 сер.)</button>
+<div class="tavern-wrapper" style="color: #ccc; font-family: 'Cinzel', serif;">
+    <div class="tavern-categories" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #8b0000; padding-bottom: 10px;">
+        {% for cat_id, cat_name in categories %}
+            <a href="?category={{ cat_id }}" class="cat-link {% if current_category == cat_id %}active{% endif %}" style="text-decoration: none; color: {% if current_category == cat_id %}#fff{% else %}#8b7355{% endif %}; background: {% if current_category == cat_id %}#8b0000{% else %}#333{% endif %}; padding: 5px 15px; border-radius: 5px;">
+                {{ cat_name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="menu-items" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+        {% for item in items %}
+        <div class="menu-item-card" style="background: rgba(0,0,0,0.4); border: 1px solid #444; padding: 15px; border-radius: 10px; text-align: center;">
+            <h4 style="margin: 0 0 10px 0; color: #d4af37;">{{ item.name }}</h4>
+            <p style="font-size: 12px; height: 40px;">{{ item.description|truncatewords:10 }}</p>
+            <div style="margin: 10px 0; font-size: 13px;">
+                {% if item.restore_hp > 0 %}<span style="color: #4caf50;">+{{ item.restore_hp }} HP</span>{% endif %}
+                {% if item.restore_mp > 0 %}<span style="color: #4d94ff; margin-left: 10px;">+{{ item.restore_mp }} MP</span>{% endif %}
+            </div>
+            <div style="font-weight: bold; color: #c0c0c0; margin-bottom: 10px;">Цена: {{ item.price_silver }} сер.</div>
+
+            <form method="POST" action="{% url 'tavern_buy' item.id %}">
+                {% csrf_token %}
+                <div style="display: flex; justify-content: center; gap: 5px;">
+                    <input type="number" name="quantity" value="1" min="1" style="width: 50px; background: #222; color: #fff; border: 1px solid #555; padding: 5px;">
+                    <button type="submit" class="btn" style="padding: 5px 10px;">Купить</button>
+                </div>
+            </form>
+        </div>
+        {% empty %}
+        <p>В этой категории пока пусто.</p>
+        {% endfor %}
+    </div>
 </div>
+
+<style>
+.cat-link:hover { background: #444; color: #fff; }
+.cat-link.active:hover { background: #8b0000; }
+</style>
 {% endblock %}

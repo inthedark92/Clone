@@ -1,0 +1,45 @@
+{% extends 'game/game_base.html' %}
+
+{% block location_title %}{{ title }}{% endblock %}
+
+{% block location_content %}
+<div class="bank-wrapper" style="color: #ccc; font-family: 'Cinzel', serif;">
+    <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; border: 1px solid #444;">
+        <h3>Ваш счет в банке</h3>
+        <p>Серебро на счету: <b style="color: #c0c0c0;">{{ bank.balance_silver }}</b></p>
+        <p>Золото на счету: <b style="color: #ffd700;">{{ bank.balance_gold }}</b></p>
+
+        <hr style="border-color: #333;">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <!-- Deposit -->
+            <div style="background: rgba(255,255,255,0.05); padding: 15px;">
+                <h4>Пополнить счет</h4>
+                <form method="POST" action="{% url 'bank_deposit' %}">
+                    {% csrf_token %}
+                    <input type="number" name="amount" min="1" required style="width: 100px; background: #222; color: #fff; border: 1px solid #555; padding: 5px;">
+                    <select name="currency" style="background: #222; color: #fff; border: 1px solid #555; padding: 5px;">
+                        <option value="silver">Серебро</option>
+                        <option value="gold">Золото</option>
+                    </select>
+                    <button type="submit" class="btn" style="margin-top: 10px;">Внести</button>
+                </form>
+            </div>
+
+            <!-- Withdraw -->
+            <div style="background: rgba(255,255,255,0.05); padding: 15px;">
+                <h4>Снять со счета</h4>
+                <form method="POST" action="{% url 'bank_withdraw' %}">
+                    {% csrf_token %}
+                    <input type="number" name="amount" min="1" required style="width: 100px; background: #222; color: #fff; border: 1px solid #555; padding: 5px;">
+                    <select name="currency" style="background: #222; color: #fff; border: 1px solid #555; padding: 5px;">
+                        <option value="silver">Серебро</option>
+                        <option value="gold">Золото</option>
+                    </select>
+                    <button type="submit" class="btn" style="margin-top: 10px;">Снять</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

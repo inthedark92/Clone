@@ -1,0 +1,72 @@
+{% extends 'game/game_base.html' %}
+
+{% block location_title %}Бой в процессе (Ход {{ battle.current_turn }}){% endblock %}
+
+{% block location_content %}
+<div class="combat-wrapper" style="color: #ccc; font-family: 'Cinzel', serif;">
+    <div class="combat-status" style="display: flex; justify-content: space-between; gap: 40px; margin-bottom: 20px;">
+        <!-- Player -->
+        <div class="player-box" style="flex: 1; text-align: center; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid #4caf50;">
+            <h3 style="color: #4caf50; margin: 0;">{{ user.username }}</h3>
+            <div style="font-size: 18px; margin: 10px 0;">HP: <b>{{ player.hp_snapshot }}</b> / {{ user.max_hp }}</div>
+            <div style="width: 100%; height: 10px; background: #333; border-radius: 5px;">
+                <div style="width: {% widthratio player.hp_snapshot user.max_hp 100 %}%; height: 100%; background: #4caf50; border-radius: 5px;"></div>
+            </div>
+        </div>
+
+        <div style="align-self: center; font-size: 30px; color: #8b0000; font-weight: bold;">VS</div>
+
+        <!-- Monster -->
+        <div class="monster-box" style="flex: 1; text-align: center; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid #f44336;">
+            <h3 style="color: #f44336; margin: 0;">{{ monster.stats_snapshot.name }}</h3>
+            <div style="font-size: 18px; margin: 10px 0;">HP: <b>{{ monster.hp_snapshot }}</b> / {{ monster.stats_snapshot.hp }}</div>
+            <div style="width: 100%; height: 10px; background: #333; border-radius: 5px;">
+                <div style="width: {% widthratio monster.hp_snapshot monster.stats_snapshot.hp 100 %}%; height: 100%; background: #f44336; border-radius: 5px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="combat-actions" style="display: flex; gap: 20px;">
+        <!-- Controls -->
+        <div class="controls-box" style="flex: 1; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px;">
+            <form method="POST" action="{% url 'combat_turn' battle.id %}">
+                {% csrf_token %}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4 style="margin-top: 0;">Куда бьем:</h4>
+                        <label class="zone-label"><input type="radio" name="hit" value="head" required> Голова</label><br>
+                        <label class="zone-label"><input type="radio" name="hit" value="body" checked> Туловище</label><br>
+                        <label class="zone-label"><input type="radio" name="hit" value="belt"> Пояс</label><br>
+                        <label class="zone-label"><input type="radio" name="hit" value="legs"> Ноги</label>
+                    </div>
+                    <div>
+                        <h4 style="margin-top: 0;">Что защищаем:</h4>
+                        <label class="zone-label"><input type="radio" name="block" value="head"> Голова</label><br>
+                        <label class="zone-label"><input type="radio" name="block" value="body" checked> Туловище</label><br>
+                        <label class="zone-label"><input type="radio" name="block" value="belt"> Пояс</label><br>
+                        <label class="zone-label"><input type="radio" name="block" value="legs"> Ноги</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 20px; font-size: 20px;">Сделать ход!</button>
+            </form>
+        </div>
+
+        <!-- Log -->
+        <div class="log-box" style="width: 300px; background: #111; padding: 10px; border: 1px solid #444; height: 250px; overflow-y: scroll; font-size: 13px;">
+            <h4 style="margin: 0 0 10px 0; border-bottom: 1px solid #333;">Лог боя:</h4>
+            {% for entry in battle.log reversed %}
+                <div style="margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 2px;">
+                    <span style="color: #888;">Ход {{ entry.turn }}:</span><br>
+                    <span style="color: #4caf50;">{{ entry.m }}</span><br>
+                    <span style="color: #f44336;">{{ entry.p }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.zone-label { display: block; padding: 5px; cursor: pointer; }
+.zone-label:hover { background: rgba(255,255,255,0.1); }
+</style>
+{% endblock %}

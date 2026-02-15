@@ -1,0 +1,22 @@
+{% extends 'game/game_base.html' %}
+
+{% block location_title %}Бой завершен{% endblock %}
+
+{% block location_content %}
+<div class="result-wrapper" style="text-align: center; color: #ccc; font-family: 'Cinzel', serif; padding: 40px;">
+    {% if player.is_winner %}
+        <h1 style="color: #4caf50; font-size: 50px;">ПОБЕДА!</h1>
+    {% else %}
+        <h1 style="color: #f44336; font-size: 50px;">ПОРАЖЕНИЕ</h1>
+    {% endif %}
+
+    <div style="background: rgba(0,0,0,0.4); display: inline-block; padding: 20px; border-radius: 10px; border: 1px solid #d4af37; margin-top: 20px;">
+        <p>Бой длился {{ battle.current_turn }} ходов.</p>
+        <p>Результаты боя были отправлены в системный чат.</p>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'game_index' %}" class="btn">Вернуться в город</a>
+    </div>
+</div>
+{% endblock %}

@@ -16,6 +16,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        # Add to user specific private group
+        await self.channel_layer.group_add(f"chat_user_{self.user.id}", self.channel_name)
+
         # Add to global world group
         await self.channel_layer.group_add("chat_world", self.channel_name)
 
@@ -35,6 +38,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         if self.user.is_authenticated:
+            await self.channel_layer.group_discard(f"chat_user_{self.user.id}", self.channel_name)
             await self.channel_layer.group_discard("chat_world", self.channel_name)
             await self.channel_layer.group_discard(f"chat_loc_{self.location}", self.channel_name)
             if self.user.level >= 4:
@@ -48,6 +52,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_text = data.get('message')
         channel = data.get('channel', 'world')
+        recipient_name = data.get('recipient')
 
         if not message_text:
             return
@@ -60,10 +65,44 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }))
             return
 
+        # Private message handling
+        recipient = None
+        if channel == 'private' and recipient_name:
+            recipient = await self.get_user_by_name(recipient_name)
+            if not recipient:
+                await self.send(text_data=json.dumps({
+                    'type': 'error',
+                    'message': f'Пользователь {recipient_name} не найден.'
+                }))
+                return
+
         # Save message to DB
-        msg = await self.save_message(self.user, message_text, channel, self.location if channel == 'location' else None)
+        msg = await self.save_message(self.user, message_text, channel, self.location if channel == 'location' else None, recipient)
 
         # Broadcast message
+        if channel == 'private' and recipient:
+            # Send to recipient
+            await self.channel_layer.group_send(
+                f"chat_user_{recipient.id}",
+                {
+                    'type': 'chat_message',
+                    'message': message_text,
+                    'sender': self.user.username,
+                    'channel': channel,
+                    'timestamp': msg.created_at.strftime('%H:%M')
+                }
+            )
+            # Also send to sender
+            await self.send(text_data=json.dumps({
+                'type': 'chat',
+                'message': message_text,
+                'sender': self.user.username,
+                'channel': channel,
+                'recipient': recipient.username,
+                'timestamp': msg.created_at.strftime('%H:%M')
+            }))
+            return
+
         group_name = "chat_world"
         if channel == 'location':
             group_name = f"chat_loc_{self.location}"
@@ -74,7 +113,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         elif channel == 'alliance' and self.user.alliance:
             group_name = f"chat_alliance_{self.user.alliance}"
         elif channel == 'group':
-            # group_name = f"chat_group_{self.user.group_id}"
             group_name = "chat_world" # Fallback
 
         await self.channel_layer.group_send(
@@ -98,13 +136,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     @database_sync_to_async
-    def save_message(self, user, text, channel, location):
+    def save_message(self, user, text, channel, location, recipient=None):
         return ChatMessage.objects.create(
             user=user,
             text=text,
             channel=channel,
-            location=location
+            location=location,
+            recipient=recipient
         )
+
+    @database_sync_to_async
+    def get_user_by_name(self, username):
+        try:
+            return User.objects.get(username=username)
+        except User.DoesNotExist:
+            return None
 
 class OnlineConsumer(AsyncWebsocketConsumer):
     async def connect(self):
