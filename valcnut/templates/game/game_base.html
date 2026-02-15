@@ -32,8 +32,9 @@
         #bottom-panel { height: 200px; background-color: #262626; border-top: 2px solid #8b0000; display: flex; }
 
         /* Chat */
-        #chat-container { flex: 1; display: flex; flex-direction: column; padding: 10px; border-right: 1px solid #4d4d4d; }
-        .chat-tabs { display: flex; margin-bottom: 5px; }
+        #chat-container { flex: 1; display: flex; flex-direction: column; padding: 10px; border-right: 1px solid #4d4d4d; position: relative; }
+        .chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .chat-tabs { display: flex; }
         .chat-tab { padding: 5px 10px; cursor: pointer; background: #333; margin-right: 5px; font-size: 12px; }
         .chat-tab.active { background: #8b0000; color: #fff; }
         #chat-log { flex: 1; background-color: #111; border: 1px solid #333; padding: 5px; font-size: 12px; overflow-y: scroll; margin-bottom: 5px; }
@@ -60,8 +61,10 @@
         </div>
         <div class="panel-right">
             {% if slug == 'arena' %}
-            <button onclick="location.href='#'" style="background: #8b0000; color: #fff; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Дуэли</button>
+            <button onclick="location.href='{% url 'start_duel' %}'" style="background: #8b0000; color: #fff; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Дуэли</button>
             {% endif %}
+            <button onclick="location.href='{% url 'character' %}'" style="background: #444; color: #fff; border: 1px solid #555; padding: 5px 10px; cursor: pointer; margin-right: 5px;">Персонаж</button>
+            <button onclick="location.href='{% url 'inventory' %}'" style="background: #444; color: #fff; border: 1px solid #555; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Инвентарь</button>
             <a href="{% url 'logout' %}" style="color: #8b7355; text-decoration: none; font-size: 14px; font-weight: bold;">Выход</a>
         </div>
     </div>
@@ -98,14 +101,27 @@
 
     <div id="bottom-panel">
         <div id="chat-container">
-            <div class="chat-tabs">
-                <div class="chat-tab active" data-channel="world">Мир</div>
-                <div class="chat-tab" data-channel="location">Локация</div>
-                <div class="chat-tab" data-channel="trade">Торговля</div>
-                <div class="chat-tab" data-channel="group">Группа</div>
+            <div class="chat-header">
+                <div class="chat-tabs">
+                    <div class="chat-tab active" data-channel="world">Мир</div>
+                    <div class="chat-tab" data-channel="location">Локация</div>
+                    <div class="chat-tab" data-channel="trade">Торговля</div>
+                    <div class="chat-tab" data-channel="group">Группа</div>
+                    {% if user.clan %}<div class="chat-tab" data-channel="clan">Клан</div>{% endif %}
+                    {% if user.alliance %}<div class="chat-tab" data-channel="alliance">Альянс</div>{% endif %}
+                </div>
+                <div id="server-info" style="font-size: 10px; color: #888;">
+                    <span id="day-night"></span> | <span id="server-time"></span> (МСК)
+                </div>
             </div>
             <div id="chat-log"></div>
-            <input type="text" id="chat-input" placeholder="Сообщение...">
+            <div class="chat-controls" style="display: flex; gap: 5px; margin-bottom: 5px;">
+                <button class="chat-btn" title="Инфо Клана">🛡️</button>
+                <button class="chat-btn" title="Почта">✉️</button>
+                <button class="chat-btn" title="Друзья">👥</button>
+                <button class="chat-btn" title="Смайлы">😊</button>
+                <input type="text" id="chat-input" placeholder="Сообщение..." style="flex: 1;">
+            </div>
         </div>
         <div id="online-container">
             <div class="online-tabs">
@@ -118,7 +134,33 @@
         </div>
     </div>
 
+    <style>
+        .chat-btn { background: #333; border: 1px solid #444; color: #ccc; cursor: pointer; padding: 2px 5px; font-size: 12px; }
+        .chat-btn:hover { background: #444; }
+    </style>
+
     <script>
+        // Server time and Day/Night logic
+        function updateServerTime() {
+            const now = new Date();
+            // Convert to Moscow time (UTC+3)
+            const moscowOffset = 3 * 60;
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const moscowTime = new Date(utc + (60000 * moscowOffset));
+
+            document.getElementById('server-time').innerText = moscowTime.toLocaleTimeString('ru-RU', { hour12: false });
+
+            // Day/Night: toggle every 4 hours
+            const hour = moscowTime.getHours();
+            const cycle = Math.floor(hour / 4);
+            const isDay = cycle % 2 === 1; // 4-8 Day, 8-12 Night, 12-16 Day...
+            const dayNightEl = document.getElementById('day-night');
+            dayNightEl.innerText = isDay ? '☀️ День' : '🌙 Ночь';
+            dayNightEl.style.color = isDay ? '#ffd700' : '#4d94ff';
+        }
+        setInterval(updateServerTime, 1000);
+        updateServerTime();
+
         const chatLog = document.getElementById('chat-log');
         const chatInput = document.getElementById('chat-input');
         const onlineList = document.getElementById('online-list');

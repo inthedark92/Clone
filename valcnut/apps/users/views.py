@@ -12,10 +12,21 @@ def character_view(request):
     # Get equipped items
     equipped_items = user.inventory.filter(is_equipped=True)
 
+    stats_config = [
+        ('strength', 'Сила', 0),
+        ('agility', 'Ловкость', 0),
+        ('intuition', 'Интуиция', 0),
+        ('endurance', 'Выносливость', 0),
+        ('intelligence', 'Интеллект', 4),
+        ('wisdom', 'Мудрость', 7),
+        ('spirit', 'Дух', 7),
+    ]
+
     context = {
         'player': user,
         'equipped_items': equipped_items,
-        'next_level_exp': (user.level + 1) * 100
+        'next_level_exp': user.next_level_exp,
+        'stats_config': stats_config,
     }
     return render(request, 'game/character.html', context)
 
@@ -30,6 +41,9 @@ def increase_stat(request):
 
         if stat == 'intelligence' and user.level < 4:
             return JsonResponse({'error': 'Интеллект можно повышать только с 4 уровня.'}, status=400)
+
+        if stat in ['wisdom', 'spirit'] and user.level < 7:
+            return JsonResponse({'error': f'{stat.capitalize()} можно повышать только с 7 уровня.'}, status=400)
 
         valid_stats = ['strength', 'agility', 'intuition', 'endurance', 'intelligence', 'wisdom', 'spirit']
         if stat in valid_stats:
@@ -52,7 +66,11 @@ def increase_stat(request):
                 'max_hp': user.max_hp,
                 'max_mp': user.max_mp,
                 'current_hp': user.current_hp,
-                'current_mp': user.current_mp
+                'current_mp': user.current_mp,
+                'damage': user.damage_range,
+                'evasion': user.evasion,
+                'crit': user.critical_chance,
+                'defense': user.defense
             })
 
     return JsonResponse({'error': 'Некорректный запрос.'}, status=400)

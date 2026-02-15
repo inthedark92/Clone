@@ -1,45 +1,107 @@
 {% extends 'game/game_base.html' %}
-{% block location_title %}Инвентарь{% endblock %}
-{% block location_content %}
-<p>Здесь хранятся ваши трофеи и снаряжение.</p>
-<div style="margin-top: 20px;">
-    {% if items %}
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="border-bottom: 1px solid #4d4d4d;">
-                    <th style="text-align: left; padding: 10px;">Предмет</th>
-                    <th style="text-align: left; padding: 10px;">Тип</th>
-                    <th style="text-align: left; padding: 10px;">Статус</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for inv_item in items %}
-                <tr style="border-bottom: 1px solid #333;">
-                    <td style="padding: 10px;">{{ inv_item.item.name }}</td>
-                    <td style="padding: 10px;">{{ inv_item.item.get_item_type_display }} (+{{ inv_item.enhancement_level }})</td>
-                    <td style="padding: 10px;">
-                        <div>
-                            <small>Прочность: {{ inv_item.durability_current }}/{{ inv_item.durability_max }}</small>
-                        </div>
-                        {% if inv_item.is_equipped %}
-                            <span style="color: #00ff00;">Надето ({{ inv_item.slot }})</span>
-                        {% else %}
-                            <button class="btn" style="padding: 5px 10px; font-size: 10px;">Надеть</button>
-                        {% endif %}
 
-                        {% if user.last_location == 'forge' %}
-                            <div style="margin-top: 5px;">
-                                <a href="{% url 'repair_item' inv_item.id %}" style="background: #4d94ff; color: #fff; text-decoration: none; padding: 2px 5px; font-size: 10px; border-radius: 3px;">Починить</a>
-                                <a href="{% url 'enhance_item' inv_item.id %}" style="background: #ffd700; color: #000; text-decoration: none; padding: 2px 5px; font-size: 10px; border-radius: 3px; margin-left: 5px;">Улучшить</a>
-                            </div>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Ваш инвентарь пуст.</p>
-    {% endif %}
+{% block location_title %}Инвентарь{% endblock %}
+
+{% block location_content %}
+<div class="inventory-wrapper" style="color: #ccc; font-family: 'Cinzel', serif;">
+
+    <!-- Equipment Grid -->
+    <div class="equipment-section" style="display: flex; gap: 20px; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; border: 1px solid #444; margin-bottom: 20px;">
+        <!-- Left Slots -->
+        <div class="slots-column" style="display: grid; grid-template-rows: repeat(5, 60px); gap: 10px;">
+            <div class="slot" title="Серьги 1"></div>
+            <div class="slot" title="Шлем"></div>
+            <div class="slot" title="Амулет"></div>
+            <div class="slot" title="Наручи 1"></div>
+            <div class="slot" title="Оружие 1"></div>
+        </div>
+
+        <!-- Center: Character Icon -->
+        <div class="char-icon-container" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+            <div class="char-icon" style="width: 150px; height: 250px; background: #222; border: 2px solid #d4af37; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #d4af37;">
+                ᚦ
+            </div>
+            <div style="margin-top: 10px; font-weight: bold; color: #d4af37;">{{ user.username }}</div>
+
+            <!-- Mid Slots (e.g. Armor, Belt) -->
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <div class="slot" title="Броня"></div>
+                <div class="slot" title="Пояс"></div>
+                <div class="slot" title="Поножи"></div>
+            </div>
+        </div>
+
+        <!-- Right Slots -->
+        <div class="slots-column" style="display: grid; grid-template-rows: repeat(5, 60px); gap: 10px;">
+            <div class="slot" title="Серьги 2"></div>
+            <div class="slot" title="Накидка"></div>
+            <div class="slot" title="Перчатки"></div>
+            <div class="slot" title="Наручи 2"></div>
+            <div class="slot" title="Оружие 2 / Щит"></div>
+        </div>
+
+        <!-- Far Right: Rings & Boots -->
+        <div class="slots-column" style="display: grid; grid-template-rows: repeat(5, 60px); gap: 10px;">
+            <div class="slot" title="Кольцо 1"></div>
+            <div class="slot" title="Кольцо 2"></div>
+            <div class="slot" title="Кольцо 3"></div>
+            <div class="slot" title="Кольцо 4"></div>
+            <div class="slot" title="Сапоги"></div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="inventory-tabs" style="display: flex; border-bottom: 2px solid #8b0000; margin-bottom: 15px;">
+        <div class="inv-tab active" data-cat="equipment">Экипировка</div>
+        <div class="inv-tab" data-cat="elixirs">Эликсиры</div>
+        <div class="inv-tab" data-cat="scrolls">Свитки</div>
+        <div class="inv-tab" data-cat="quest">Квестовые</div>
+        <div class="inv-tab" data-cat="gifts">Подарки</div>
+    </div>
+
+    <!-- Items List -->
+    <div id="items-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+        {% for inv_item in items %}
+        <div class="item-card" data-category="{{ inv_item.item.category }}" style="background: #222; border: 1px solid #444; padding: 10px; border-radius: 5px; text-align: center;">
+            <div style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">{{ inv_item.item.name }}</div>
+            <div style="font-size: 10px; color: #888; margin-bottom: 5px;">{{ inv_item.item.get_item_type_display }}</div>
+            <div style="font-size: 11px;">+{{ inv_item.enhancement_level }} | Износ: {{ inv_item.durability_current }}/{{ inv_item.durability_max }}</div>
+            <div style="margin-top: 10px;">
+                {% if not inv_item.is_equipped %}
+                    <button style="background: #3a3a3a; color: #ccc; border: 1px solid #555; padding: 3px 8px; cursor: pointer; font-size: 11px;">Использовать</button>
+                {% else %}
+                    <span style="color: #4caf50; font-size: 11px;">Надето</span>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p style="grid-column: 1/-1; text-align: center; color: #666;">Инвентарь пуст.</p>
+        {% endfor %}
+    </div>
 </div>
+
+<style>
+.slot { width: 50px; height: 50px; background: #333; border: 1px solid #555; border-radius: 5px; cursor: pointer; }
+.slot:hover { border-color: #d4af37; }
+.inv-tab { padding: 8px 20px; cursor: pointer; background: #333; margin-right: 2px; border-radius: 5px 5px 0 0; font-size: 14px; }
+.inv-tab.active { background: #8b0000; color: #fff; }
+</style>
+
+<script>
+document.querySelectorAll('.inv-tab').forEach(tab => {
+    tab.onclick = () => {
+        document.querySelectorAll('.inv-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const cat = tab.dataset.cat;
+        document.querySelectorAll('.item-card').forEach(card => {
+            if (cat === 'equipment' && card.dataset.category === 'equipment') card.style.display = 'block';
+            else if (card.dataset.category === cat) card.style.display = 'block';
+            else card.style.display = 'none';
+        });
+    };
+});
+
+// Initial filter
+document.querySelector('.inv-tab.active').click();
+</script>
 {% endblock %}

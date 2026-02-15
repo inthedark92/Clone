@@ -4,7 +4,7 @@ from apps.items.models import InventoryItem
 
 class Clan(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    leader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='led_clans')
     created_at = models.DateTimeField(auto_now_add=True)
 
 class BankAccount(models.Model):
@@ -25,6 +25,8 @@ class ChatMessage(models.Model):
         ('location', 'Локация'),
         ('trade', 'Торговый'),
         ('group', 'Группа'),
+        ('clan', 'Клан'),
+        ('alliance', 'Альянс'),
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()

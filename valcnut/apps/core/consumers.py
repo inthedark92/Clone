@@ -27,12 +27,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if self.user.level >= 4:
             await self.channel_layer.group_add("chat_trade", self.channel_name)
 
+        # Add to clan/alliance groups
+        if self.user.clan:
+            await self.channel_layer.group_add(f"chat_clan_{self.user.clan}", self.channel_name)
+        if self.user.alliance:
+            await self.channel_layer.group_add(f"chat_alliance_{self.user.alliance}", self.channel_name)
+
     async def disconnect(self, close_code):
         if self.user.is_authenticated:
             await self.channel_layer.group_discard("chat_world", self.channel_name)
             await self.channel_layer.group_discard(f"chat_loc_{self.location}", self.channel_name)
             if self.user.level >= 4:
                 await self.channel_layer.group_discard("chat_trade", self.channel_name)
+            if self.user.clan:
+                await self.channel_layer.group_discard(f"chat_clan_{self.user.clan}", self.channel_name)
+            if self.user.alliance:
+                await self.channel_layer.group_discard(f"chat_alliance_{self.user.alliance}", self.channel_name)
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -59,6 +69,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             group_name = f"chat_loc_{self.location}"
         elif channel == 'trade':
             group_name = "chat_trade"
+        elif channel == 'clan' and self.user.clan:
+            group_name = f"chat_clan_{self.user.clan}"
+        elif channel == 'alliance' and self.user.alliance:
+            group_name = f"chat_alliance_{self.user.alliance}"
         elif channel == 'group':
             # group_name = f"chat_group_{self.user.group_id}"
             group_name = "chat_world" # Fallback

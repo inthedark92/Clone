@@ -1,0 +1,19 @@
+{% extends 'game/game_base.html' %}
+
+{% block location_title %}Зал Новичков{% endblock %}
+
+{% block location_content %}
+<p>Здесь собираются те, кто только начинает свой путь в мире Valcnut. Мудрые наставники дают советы, а новички готовятся к первым боям.</p>
+
+<div class="navigation-links" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+    <a href="{% url 'location' 'warrior_hall' %}" class="nav-btn">Зал Воинов (4+ ур.)</a>
+    <a href="{% url 'location' 'mage_hall' %}" class="nav-btn">Зал Магов (4+ ур.)</a>
+    <hr style="border: 0; border-top: 1px solid #444;">
+    <a href="{% url 'location' 'central_square' %}" class="nav-btn">Выйти на Центральную Площадь</a>
+</div>
+
+<style>
+.nav-btn { background: #333; color: #d4c5a1; padding: 10px; text-decoration: none; border: 1px solid #555; border-radius: 5px; text-align: center; }
+.nav-btn:hover { background: #444; border-color: #8b0000; }
+</style>
+{% endblock %}

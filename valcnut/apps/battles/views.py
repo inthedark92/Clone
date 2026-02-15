@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Battle, BattleParticipant
 from .monsters import get_monster_for_level
+import random
 
 @login_required
 def start_pve(request):
@@ -11,29 +13,38 @@ def start_pve(request):
     user = request.user
     monster = get_monster_for_level(user.level)
 
-    battle = Battle.objects.create(battle_type='pve', status='in_progress')
+    # Simple simulated battle result
+    # In a real game, this would be turn-based, but here we process it for the hunt
+    win_chance = 0.7 + (user.level * 0.05)
+    if random.random() < win_chance:
+        # Success
+        gold_gain = random.randint(monster['gold_min'], monster['gold_max'])
+        exp_gain = monster['exp']
+        user.silver += gold_gain # Using silver for gold rewards for now
+        user.monster_wins += 1
+        user.add_exp(exp_gain)
+        messages.success(request, f"Победа над {monster['name']}! Получено: {gold_gain} серебра, {exp_gain} опыта.")
+    else:
+        # Loss
+        user.monster_losses += 1
+        user.current_hp = max(1, user.current_hp * 0.5)
+        user.save()
+        messages.error(request, f"Вы проиграли в схватке с {monster['name']}.")
 
-    # Player participant
-    BattleParticipant.objects.create(
-        battle=battle,
-        user=user,
-        team=1,
-        hp_snapshot=user.current_hp,
-        stats_snapshot=user.get_battle_stats()
-    )
+    # Durability loss (accumulation of wear)
+    equipped = user.inventory.filter(is_equipped=True)
+    for item in equipped:
+        item.durability_current = min(item.durability_max, item.durability_current + random.randint(1, 3))
+        item.save()
 
-    # Monster participant
-    BattleParticipant.objects.create(
-        battle=battle,
-        npc_id=monster['id'],
-        team=2,
-        hp_snapshot=monster['hp'],
-        stats_snapshot=monster
-    )
+    return redirect('location', slug='forest')
 
-    # Redirect to battle UI (assuming it exists or will be implemented)
-    # Since the prompt doesn't ask for a new battle UI, I'll assume there's one at /ws/battle/
-    # But usually there is a template.
-    # For now I'll just redirect to forest and maybe they can see battle status?
-    # Actually, I'll check if there is a battle view in the codebase.
-    return redirect('game_index') # Placeholder
+@login_required
+def start_duel(request):
+    if request.user.last_location != 'arena':
+        messages.error(request, "Дуэли возможны только на Арене.")
+        return redirect('location', slug=request.user.last_location)
+
+    # Placeholder for duel search or direct challenge
+    messages.info(request, "Поиск противника для дуэли...")
+    return redirect('location', slug='arena')

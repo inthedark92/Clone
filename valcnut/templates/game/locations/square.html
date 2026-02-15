@@ -4,7 +4,21 @@
 
 {% block location_content %}
 <p>Вы стоите посреди огромной площади. Вокруг суетятся другие викинги, готовясь к набегам или отдыхая после славных битв.</p>
-<div style="margin-top: 20px;">
-    <p>Здесь вы можете увидеть список игроков онлайн или просто понаблюдать за небом.</p>
+
+<div class="navigation-links" style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    <a href="{% url 'location' 'tavern' %}" class="nav-btn">Таверна "У Одина"</a>
+    <a href="{% url 'location' 'market' %}" class="nav-btn">Рынок</a>
+    <a href="{% url 'location' 'forge' %}" class="nav-btn">Кузница</a>
+    <a href="{% url 'location' 'commission_shop' %}" class="nav-btn">Комиссионка</a>
+    <a href="{% url 'location' 'mage_school' %}" class="nav-btn">Школа Магов</a>
+    <a href="{% url 'location' 'combat_school' %}" class="nav-btn">Школа Воинов</a>
+    <a href="{% url 'location' 'arena' %}" class="nav-btn">Арена</a>
+    <a href="{% url 'location' 'forest' %}" class="nav-btn">Темный Лес</a>
+    <a href="{% url 'location' 'suburb' %}" class="nav-btn" style="grid-column: 1 / -1; background: #555;">Выход в Пригород</a>
 </div>
+
+<style>
+.nav-btn { background: #333; color: #d4c5a1; padding: 10px; text-decoration: none; border: 1px solid #555; border-radius: 5px; text-align: center; font-size: 14px; }
+.nav-btn:hover { background: #444; border-color: #8b0000; }
+</style>
 {% endblock %}

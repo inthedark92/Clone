@@ -1,0 +1,21 @@
+{% extends 'game/game_base.html' %}
+
+{% block location_title %}Пригород{% endblock %}
+
+{% block location_content %}
+<p>Тихое место за пределами города. Отсюда начинаются пути к ресурсам и опасностям.</p>
+
+<div class="navigation-links" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+    <a href="{% url 'location' 'mine' %}" class="nav-btn">Шахта</a>
+    <a href="{% url 'location' 'field' %}" class="nav-btn">Поле</a>
+    <a href="{% url 'location' 'temple' %}" class="nav-btn">Храм</a>
+    <a href="{% url 'location' 'cave' %}" class="nav-btn">Пещера</a>
+    <hr style="border: 0; border-top: 1px solid #444;">
+    <a href="{% url 'location' 'central_square' %}" class="nav-btn">Вернуться в город</a>
+</div>
+
+<style>
+.nav-btn { background: #333; color: #d4c5a1; padding: 10px; text-decoration: none; border: 1px solid #555; border-radius: 5px; text-align: center; }
+.nav-btn:hover { background: #444; border-color: #8b0000; }
+</style>
+{% endblock %}

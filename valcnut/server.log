@@ -1,0 +1,8 @@
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+Listen failure: Couldn't listen on 0.0.0.0:8000: [Errno 98] Address already in use.

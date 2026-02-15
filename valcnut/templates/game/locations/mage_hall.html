@@ -1,0 +1,18 @@
+{% extends 'game/game_base.html' %}
+
+{% block location_title %}{{ title }}{% endblock %}
+
+{% block location_content %}
+<p>Воздух здесь пропитан магией. Великие маги делятся своими знаниями с теми, кто достоин познать тайны стихий.</p>
+
+<div class="navigation-links" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+    <a href="{% url 'location' 'central_square' %}" class="nav-btn">Выйти на Центральную Площадь</a>
+    <hr style="border: 0; border-top: 1px solid #444;">
+    <a href="{% url 'location' 'novice_hall' %}" class="nav-btn" style="font-size: 10px; background: #222;">Вернуться в Зал Новичков</a>
+</div>
+
+<style>
+.nav-btn { background: #333; color: #d4c5a1; padding: 10px; text-decoration: none; border: 1px solid #555; border-radius: 5px; text-align: center; }
+.nav-btn:hover { background: #444; border-color: #8b0000; }
+</style>
+{% endblock %}
