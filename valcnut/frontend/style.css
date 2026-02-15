@@ -1,0 +1,107 @@
+body {
+    background-color: #1a1a1a;
+    color: #d4c5a1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#app {
+    width: 1000px;
+    background-color: #262626;
+    min-height: 100vh;
+    border-left: 2px solid #4d4d4d;
+    border-right: 2px solid #4d4d4d;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    border-bottom: 2px solid #8b0000;
+    padding: 10px;
+}
+
+h1 {
+    color: #8b0000;
+    letter-spacing: 5px;
+    margin: 0;
+}
+
+main {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.hidden { display: none !important; }
+
+button {
+    background-color: #4a3c28;
+    color: #d4c5a1;
+    border: 1px solid #8b7355;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #8b0000;
+    color: white;
+}
+
+input {
+    background-color: #333;
+    color: #d4c5a1;
+    border: 1px solid #4a3c28;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.battle-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.combatants {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5em;
+    background: #111;
+    padding: 20px;
+}
+
+.combat-log {
+    height: 200px;
+    overflow-y: scroll;
+    background: #111;
+    padding: 10px;
+    border: 1px solid #4a3c28;
+    font-size: 0.9em;
+}
+
+.zones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+#chat-box {
+    position: fixed;
+    bottom: 0;
+    width: 1000px;
+    background: #111;
+    border-top: 2px solid #8b0000;
+}
+
+#chat-messages {
+    height: 100px;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+#chat-input {
+    width: 90%;
+    margin: 5px;
+}
