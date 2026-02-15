@@ -18,39 +18,72 @@
         /* Main Layout */
         #game-container { display: flex; flex: 1; overflow: hidden; }
 
-        /* Left Navigation */
-        #left-nav { width: 200px; background-color: #262626; border-right: 1px solid #4d4d4d; padding: 20px; display: flex; flex-direction: column; }
-        #left-nav a { color: #8b7355; text-decoration: none; padding: 10px; border-bottom: 1px solid #333; font-weight: bold; }
-        #left-nav a:hover { background-color: #333; color: #8b0000; }
-        #left-nav a.active { color: #d4c5a1; background-color: #8b0000; }
-
         /* Content Area */
         #content-area { flex: 1; padding: 20px; overflow-y: auto; background-color: #1a1a1a; }
         .location-title { border-bottom: 1px solid #8b0000; margin-bottom: 20px; padding-bottom: 10px; color: #8b0000; }
 
-        /* Chat (optional) */
-        #chat-panel { width: 300px; background-color: #262626; border-left: 1px solid #4d4d4d; padding: 10px; display: flex; flex-direction: column; }
+        /* Right Navigation */
+        #right-nav { width: 200px; background-color: #262626; border-left: 1px solid #4d4d4d; padding: 20px; display: flex; flex-direction: column; }
+        #right-nav a { color: #8b7355; text-decoration: none; padding: 10px; border-bottom: 1px solid #333; font-weight: bold; }
+        #right-nav a:hover { background-color: #333; color: #8b0000; }
+        #right-nav a.active { color: #d4c5a1; background-color: #8b0000; }
+
+        /* Bottom Panel */
+        #bottom-panel { height: 200px; background-color: #262626; border-top: 2px solid #8b0000; display: flex; }
+
+        /* Chat */
+        #chat-container { flex: 1; display: flex; flex-direction: column; padding: 10px; border-right: 1px solid #4d4d4d; }
+        .chat-tabs { display: flex; margin-bottom: 5px; }
+        .chat-tab { padding: 5px 10px; cursor: pointer; background: #333; margin-right: 5px; font-size: 12px; }
+        .chat-tab.active { background: #8b0000; color: #fff; }
         #chat-log { flex: 1; background-color: #111; border: 1px solid #333; padding: 5px; font-size: 12px; overflow-y: scroll; margin-bottom: 5px; }
-        #chat-input { background: #333; color: #ccc; border: 1px solid #444; padding: 5px; }
+        #chat-input { background: #333; color: #ccc; border: 1px solid #444; padding: 5px; width: 100%; box-sizing: border-box; }
+
+        /* Online Block */
+        #online-container { width: 300px; display: flex; flex-direction: column; padding: 10px; }
+        .online-tabs { display: flex; margin-bottom: 5px; }
+        .online-tab { padding: 5px 10px; cursor: pointer; background: #333; margin-right: 5px; font-size: 10px; }
+        .online-tab.active { background: #8b0000; color: #fff; }
+        #online-list { flex: 1; background-color: #111; border: 1px solid #333; padding: 5px; font-size: 12px; overflow-y: scroll; }
     </style>
 </head>
 <body>
     <div id="top-panel">
-        <div>
+        <div class="panel-left">
             <span class="stats-item"><strong>{{ user.username }}</strong> [{{ user.level }}]</span>
             <span class="stats-item">HP: <span class="hp-bar">{{ user.current_hp|floatformat:0 }}/{{ user.max_hp }}</span></span>
             <span class="stats-item">MP: <span class="mp-bar">{{ user.current_mp|floatformat:0 }}/{{ user.max_mp }}</span></span>
         </div>
-        <div>
+        <div class="panel-center">
             <span class="stats-item money-gold">{{ user.gold }} золота</span>
             <span class="stats-item money-silver">{{ user.silver }} серебра</span>
-            <a href="{% url 'logout' %}" style="color: #8b7355; text-decoration: none; font-size: 12px;">Выйти</a>
+        </div>
+        <div class="panel-right">
+            {% if slug == 'arena' %}
+            <button onclick="location.href='#'" style="background: #8b0000; color: #fff; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Дуэли</button>
+            {% endif %}
+            <a href="{% url 'logout' %}" style="color: #8b7355; text-decoration: none; font-size: 14px; font-weight: bold;">Выход</a>
         </div>
     </div>
 
     <div id="game-container">
-        <nav id="left-nav">
-            <a href="{% url 'inventory' %}">Рюкзак</a>
+        <main id="content-area">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" style="background: #333; padding: 10px; border-left: 5px solid #8b0000; margin-bottom: 10px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <h2 class="location-title">{% block location_title %}{% endblock %}</h2>
+            {% block location_content %}{% endblock %}
+        </main>
+
+        <nav id="right-nav">
+            <a href="{% url 'character' %}">Персонаж</a>
+            <a href="{% url 'inventory' %}">Инвентарь</a>
             <a href="{% url 'location' 'central_square' %}">Центральная Площадь</a>
             <a href="{% url 'location' 'arena' %}">Арена</a>
             <a href="{% url 'location' 'tavern' %}">Таверна "У Одина"</a>
@@ -58,19 +91,101 @@
             <a href="{% url 'location' 'clan_hall' %}">Зал Кланов</a>
             <a href="{% url 'location' 'forest' %}">Темный Лес</a>
             <a href="{% url 'location' 'bank' %}">Банк Вальхаллы</a>
+            <a href="{% url 'location' 'forge' %}">Кузница</a>
+            <a href="{% url 'location' 'mine' %}">Шахта</a>
         </nav>
-
-        <main id="content-area">
-            <h2 class="location-title">{% block location_title %}{% endblock %}</h2>
-            {% block location_content %}{% endblock %}
-        </main>
-
-        <aside id="chat-panel">
-            <div id="chat-log">
-                <div>[Система]: Добро пожаловать в Валькнут!</div>
-            </div>
-            <input type="text" id="chat-input" placeholder="Сообщение...">
-        </aside>
     </div>
+
+    <div id="bottom-panel">
+        <div id="chat-container">
+            <div class="chat-tabs">
+                <div class="chat-tab active" data-channel="world">Мир</div>
+                <div class="chat-tab" data-channel="location">Локация</div>
+                <div class="chat-tab" data-channel="trade">Торговля</div>
+                <div class="chat-tab" data-channel="group">Группа</div>
+            </div>
+            <div id="chat-log"></div>
+            <input type="text" id="chat-input" placeholder="Сообщение...">
+        </div>
+        <div id="online-container">
+            <div class="online-tabs">
+                <div class="online-tab active" data-tab="location">Локация</div>
+                <div class="online-tab" data-tab="global">Мир</div>
+                <div class="online-tab" data-tab="friends">Друзья</div>
+                <div class="online-tab" data-tab="clan">Клан</div>
+            </div>
+            <div id="online-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatLog = document.getElementById('chat-log');
+        const chatInput = document.getElementById('chat-input');
+        const onlineList = document.getElementById('online-list');
+        let currentChannel = 'world';
+        let currentOnlineTab = 'location';
+
+        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+        const onlineSocket = new WebSocket('ws://' + window.location.host + '/ws/online/');
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.type === 'chat') {
+                if (data.channel === currentChannel || data.channel === 'world') {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.innerHTML = `[${data.timestamp}] <b>${data.sender}</b>: ${data.message}`;
+                    chatLog.appendChild(msgDiv);
+                    chatLog.scrollTop = chatLog.scrollHeight;
+                }
+            } else if (data.type === 'error') {
+                alert(data.message);
+            }
+        };
+
+        onlineSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.type === 'online_list') {
+                updateOnlineList(data.data[currentOnlineTab]);
+            }
+        };
+
+        function updateOnlineList(users) {
+            onlineList.innerHTML = '';
+            users.forEach(u => {
+                const uDiv = document.createElement('div');
+                uDiv.innerHTML = `${u.username} [${u.level}]`;
+                onlineList.appendChild(uDiv);
+            });
+        }
+
+        chatInput.onkeyup = function(e) {
+            if (e.keyCode === 13) {
+                const message = chatInput.value;
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'channel': currentChannel
+                }));
+                chatInput.value = '';
+            }
+        };
+
+        document.querySelectorAll('.chat-tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentChannel = tab.dataset.channel;
+                chatLog.innerHTML = ''; // Simplified: clear on switch
+            };
+        });
+
+        document.querySelectorAll('.online-tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.online-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentOnlineTab = tab.dataset.tab;
+                // Request update or wait for next broadcast
+            };
+        });
+    </script>
 </body>
 </html>

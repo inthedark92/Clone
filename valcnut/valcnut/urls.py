@@ -16,4 +16,6 @@ urlpatterns = [
     # Game
     path('game/', include('apps.core.urls')),
     path('game/items/', include('apps.items.urls')),
+    path('game/users/', include('apps.users.urls')),
+    path('game/battles/', include('apps.battles.urls')),
 ]

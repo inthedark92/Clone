@@ -1,5 +1,5 @@
 {% extends 'game/game_base.html' %}
-{% block location_title %}Рюкзак{% endblock %}
+{% block location_title %}Инвентарь{% endblock %}
 {% block location_content %}
 <p>Здесь хранятся ваши трофеи и снаряжение.</p>
 <div style="margin-top: 20px;">
@@ -16,12 +16,22 @@
                 {% for inv_item in items %}
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px;">{{ inv_item.item.name }}</td>
-                    <td style="padding: 10px;">{{ inv_item.item.get_item_type_display }}</td>
+                    <td style="padding: 10px;">{{ inv_item.item.get_item_type_display }} (+{{ inv_item.enhancement_level }})</td>
                     <td style="padding: 10px;">
+                        <div>
+                            <small>Прочность: {{ inv_item.durability_current }}/{{ inv_item.durability_max }}</small>
+                        </div>
                         {% if inv_item.is_equipped %}
                             <span style="color: #00ff00;">Надето ({{ inv_item.slot }})</span>
                         {% else %}
                             <button class="btn" style="padding: 5px 10px; font-size: 10px;">Надеть</button>
+                        {% endif %}
+
+                        {% if user.last_location == 'forge' %}
+                            <div style="margin-top: 5px;">
+                                <a href="{% url 'repair_item' inv_item.id %}" style="background: #4d94ff; color: #fff; text-decoration: none; padding: 2px 5px; font-size: 10px; border-radius: 3px;">Починить</a>
+                                <a href="{% url 'enhance_item' inv_item.id %}" style="background: #ffd700; color: #000; text-decoration: none; padding: 2px 5px; font-size: 10px; border-radius: 3px; margin-left: 5px;">Улучшить</a>
+                            </div>
                         {% endif %}
                     </td>
                 </tr>
@@ -29,7 +39,7 @@
             </tbody>
         </table>
     {% else %}
-        <p>Ваш рюкзак пуст.</p>
+        <p>Ваш инвентарь пуст.</p>
     {% endif %}
 </div>
 {% endblock %}

@@ -68,11 +68,36 @@ class BattleLogic:
         participant.hp_snapshot = max(0, participant.hp_snapshot - damage)
         if participant.hp_snapshot <= 0:
             self.battle.status = 'finished'
-            for p in self.participants.values():
-                if p.hp_snapshot > 0:
-                    p.is_winner = True
-                else:
-                    p.is_winner = False
-                p.save()
             self.battle.save()
+            self.finalize_battle()
         participant.save()
+
+    def finalize_battle(self):
+        import random
+        from django.db.models import F
+
+        all_participants = self.battle.participants.all()
+        winners = [p for p in all_participants if p.hp_snapshot > 0]
+
+        for p in all_participants:
+            if p.hp_snapshot > 0:
+                p.is_winner = True
+            else:
+                p.is_winner = False
+            p.save()
+
+            if p.user:
+                # Decrease durability of equipped items
+                p.user.inventory.filter(is_equipped=True).update(
+                    durability_current=F('durability_current') - 1
+                )
+
+                if p.is_winner and self.battle.battle_type == 'pve':
+                    # Find monster
+                    monster_p = all_participants.exclude(npc_id__isnull=True).first()
+                    if monster_p:
+                        stats = monster_p.stats_snapshot
+                        gold_gain = random.randint(stats.get('gold_min', 0), stats.get('gold_max', 0) + 1)
+                        p.user.gold += gold_gain
+                        p.user.add_exp(stats.get('exp', 0))
+                        p.user.save()

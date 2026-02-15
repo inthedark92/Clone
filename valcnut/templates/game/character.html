@@ -1,0 +1,105 @@
+{% extends 'game/game_base.html' %}
+
+{% block location_title %}Персонаж: {{ player.username }}{% endblock %}
+
+{% block location_content %}
+<div class="character-container" style="display: flex;">
+    <div class="stats-column" style="flex: 1; padding: 10px;">
+        <h3>Характеристики</h3>
+        <p>Свободные очки: <span id="stat-points">{{ player.stat_points }}</span></p>
+
+        <div class="stat-row">
+            Сила: <span id="strength">{{ player.strength }}</span>
+            <button class="inc-btn" data-stat="strength">+</button>
+        </div>
+        <div class="stat-row">
+            Ловкость: <span id="agility">{{ player.agility }}</span>
+            <button class="inc-btn" data-stat="agility">+</button>
+        </div>
+        <div class="stat-row">
+            Интуиция: <span id="intuition">{{ player.intuition }}</span>
+            <button class="inc-btn" data-stat="intuition">+</button>
+        </div>
+        <div class="stat-row">
+            Выносливость: <span id="endurance">{{ player.endurance }}</span>
+            <button class="inc-btn" data-stat="endurance">+</button>
+        </div>
+        <div class="stat-row">
+            Интеллект: <span id="intelligence">{{ player.intelligence }}</span>
+            <button class="inc-btn" data-stat="intelligence" {% if player.level < 4 %}disabled title="Доступно с 4 уровня"{% endif %}>+</button>
+        </div>
+        <div class="stat-row">
+            Мудрость: <span id="wisdom">{{ player.wisdom }}</span>
+            <button class="inc-btn" data-stat="wisdom">+</button>
+        </div>
+        <div class="stat-row">
+            Дух: <span id="spirit">{{ player.spirit }}</span>
+            <button class="inc-btn" data-stat="spirit">+</button>
+        </div>
+
+        <hr>
+        <h3>Параметры</h3>
+        <p>Уровень: {{ player.level }}</p>
+        <p>Опыт: {{ player.exp }} / {{ next_level_exp }}</p>
+        <p>HP: <span id="hp-display">{{ player.current_hp|floatformat:0 }} / {{ player.max_hp }}</span></p>
+        <p>MP: <span id="mp-display">{{ player.current_mp|floatformat:0 }} / {{ player.max_mp }}</span></p>
+        <p>Алмазы: {{ player.diamonds }}</p>
+    </div>
+
+    <div class="equipment-column" style="flex: 1; padding: 10px; border-left: 1px solid #444;">
+        <h3>Экипировка</h3>
+        {% for item in equipped_items %}
+            <div style="margin-bottom: 5px;">
+                <b>{{ item.slot|default:"Предмет" }}:</b> {{ item.item.name }} (+{{ item.enhancement_level }})
+                <br>
+                <small>Прочность: {{ item.durability_current }}/{{ item.durability_max }}</small>
+            </div>
+        {% empty %}
+            <p>Нет надетой экипировки.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.inc-btn').forEach(btn => {
+    btn.onclick = function() {
+        const stat = this.dataset.stat;
+        const formData = new FormData();
+        formData.append('stat', stat);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch('{% url "increase_stat" %}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(data.stat).innerText = data.new_val;
+                document.getElementById('stat-points').innerText = data.stat_points;
+                document.getElementById('hp-display').innerText = Math.floor(data.current_hp) + ' / ' + data.max_hp;
+                document.getElementById('mp-display').innerText = Math.floor(data.current_mp) + ' / ' + data.max_mp;
+
+                // Also update top panel if elements exist
+                const topHp = document.querySelector('.hp-bar');
+                const topMp = document.querySelector('.mp-bar');
+                if (topHp) topHp.innerText = Math.floor(data.current_hp) + '/' + data.max_hp;
+                if (topMp) topMp.innerText = Math.floor(data.current_mp) + '/' + data.max_mp;
+
+                if (data.stat === 'intelligence' || data.stat === 'endurance') {
+                    // Might need more updates if stats affect other things
+                }
+            } else {
+                alert(data.error);
+            }
+        });
+    };
+});
+</script>
+
+<style>
+.stat-row { margin-bottom: 10px; }
+.inc-btn { background: #8b0000; color: #fff; border: none; padding: 2px 8px; cursor: pointer; margin-left: 10px; }
+.inc-btn:disabled { background: #444; cursor: not-allowed; }
+</style>
+{% endblock %}

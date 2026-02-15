@@ -42,5 +42,22 @@ class InventoryItem(models.Model):
     is_equipped = models.BooleanField(default=False)
     slot = models.CharField(max_length=50, null=True, blank=True)
 
+    durability_current = models.IntegerField(default=100)
+    durability_max = models.IntegerField(default=100)
+    enhancement_level = models.IntegerField(default=0)
+
     def __str__(self):
-        return f"{self.user.username} - {self.item.name}"
+        return f"{self.user.username} - {self.item.name} (+{self.enhancement_level})"
+
+    @property
+    def is_active(self):
+        return self.durability_current > 0
+
+    def get_bonus(self, attr):
+        if not self.is_active:
+            return 0
+        base_val = getattr(self.item, attr, 0)
+        if base_val > 0:
+            # Each enhancement level adds +1 to the stat
+            return base_val + self.enhancement_level
+        return base_val
