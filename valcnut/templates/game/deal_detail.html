@@ -1,0 +1,70 @@
+{% extends 'game/game_base.html' %}
+{% block location_title %}Сделка #{{ deal.id }}{% endblock %}
+{% block location_content %}
+<div class="deal-window" style="background: #222; padding: 20px; border: 1px solid #444;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <!-- Initiator Side -->
+        <div style="flex: 1; border: 1px solid {% if deal.initiator_accepted %}#4caf50{% else %}#555{% endif %}; padding: 10px; margin-right: 10px;">
+            <h3>{{ deal.initiator.username }}</h3>
+            <p>Серебро: {{ deal.initiator_silver }}</p>
+            <ul>
+                {% for item in deal.items.all %}
+                    {% if item.owner == deal.initiator %}
+                        <li>{{ item.inventory_item.item.name }}
+                            {% if request.user == deal.initiator and deal.status == 'active' %}
+                            <a href="{% url 'deal_remove_item' deal.id item.id %}" style="color: #ff4d4d;">[x]</a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Target Side -->
+        <div style="flex: 1; border: 1px solid {% if deal.target_accepted %}#4caf50{% else %}#555{% endif %}; padding: 10px;">
+            <h3>{{ deal.target.username }}</h3>
+            <p>Серебро: {{ deal.target_silver }}</p>
+            <ul>
+                {% for item in deal.items.all %}
+                    {% if item.owner == deal.target %}
+                        <li>{{ item.inventory_item.item.name }}
+                            {% if request.user == deal.target and deal.status == 'active' %}
+                            <a href="{% url 'deal_remove_item' deal.id item.id %}" style="color: #ff4d4d;">[x]</a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {% if deal.status == 'active' %}
+    <div class="controls" style="border-top: 1px solid #444; padding-top: 20px;">
+        <form action="{% url 'deal_update_silver' deal.id %}" method="post" style="margin-bottom: 10px;">
+            {% csrf_token %}
+            Вы предлагаете серебра: <input type="number" name="silver" value="{% if request.user == deal.initiator %}{{ deal.initiator_silver }}{% else %}{{ deal.target_silver }}{% endif %}" style="width: 100px;">
+            <button type="submit" class="btn">Обновить</button>
+        </form>
+
+        <div style="margin-bottom: 20px;">
+            <h4>Ваш инвентарь (нажмите, чтобы добавить):</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                {% for item in inventory %}
+                    <a href="{% url 'deal_add_item' deal.id item.id %}" style="background: #333; padding: 5px; border: 1px solid #555; font-size: 11px; color: #ccc; text-decoration: none;">
+                        {{ item.item.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'deal_accept' deal.id %}" class="btn" style="background: #4caf50;">Принять</a>
+            <a href="{% url 'deal_cancel' deal.id %}" class="btn" style="background: #f44336;">Отказаться</a>
+        </div>
+    </div>
+    {% else %}
+    <p>Статус сделки: <strong>{{ deal.get_status_display }}</strong></p>
+    <a href="{% url 'deals' %}" class="btn">Назад к списку</a>
+    {% endif %}
+</div>
+{% endblock %}

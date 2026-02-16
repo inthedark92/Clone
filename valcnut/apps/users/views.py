@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.decorators import login_required
@@ -31,8 +31,13 @@ def character_view(request):
     return render(request, 'game/character.html', context)
 
 @login_required
-def character_info_view(request, username):
-    player = get_object_or_404(User, username=username)
+def character_info_view(request, username=None, user_id=None):
+    User = get_user_model()
+    if user_id:
+        player = get_object_or_404(User, id=user_id)
+    else:
+        player = get_object_or_404(User, username=username)
+
     equipped_items = player.inventory.filter(is_equipped=True)
 
     context = {

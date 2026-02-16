@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-from apps.users.views import RegisterView
+from apps.users.views import RegisterView, character_info_view
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
     path('register/', RegisterView.as_view(), name='register'),
+    path('character/<int:user_id>/', character_info_view, name='character_info_direct'),
 
     # Game
     path('game/', include('apps.core.urls')),

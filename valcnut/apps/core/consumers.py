@@ -189,8 +189,8 @@ class OnlineConsumer(AsyncWebsocketConsumer):
         # In a real app, you'd track active sessions
         users = User.objects.all()
         data = {
-            'global': [{'username': u.username, 'level': u.level} for u in users],
-            'location': [{'username': u.username, 'level': u.level} for u in users if u.last_location == self.user.last_location],
+            'global': [{'id': u.id, 'username': u.username, 'level': u.level} for u in users],
+            'location': [{'id': u.id, 'username': u.username, 'level': u.level} for u in users if u.last_location == self.user.last_location],
             'friends': [],
             'clan': []
         }

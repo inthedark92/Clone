@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Battle, BattleParticipant
+from .models import Battle, BattleParticipant, Monster
+
+@admin.register(Monster)
+class MonsterAdmin(admin.ModelAdmin):
+    list_display = ('name', 'level', 'hp', 'silver_min', 'silver_max')
+    list_filter = ('level',)
+    search_fields = ('name',)
 
 class BattleParticipantInline(admin.TabularInline):
     model = BattleParticipant

@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Battle, BattleParticipant
-from .monsters import get_monster_for_level
+from .models import Battle, BattleParticipant, Monster
 from django.utils import timezone
 import random
 
@@ -17,7 +16,9 @@ def start_pve(request):
     if existing:
         return redirect('combat', battle_id=existing.id)
 
-    monster_data = get_monster_for_level(user.level)
+    monster = Monster.objects.filter(level=user.level).order_by('?').first()
+    if not monster:
+        monster = Monster.objects.order_by('level').first()
 
     # Create Battle
     battle = Battle.objects.create(battle_type='pve', status='in_progress')
@@ -30,10 +31,22 @@ def start_pve(request):
     )
 
     # Add Monster
+    monster_stats = {
+        'id': monster.id,
+        'name': monster.name,
+        'hp': monster.hp,
+        'strength': monster.strength,
+        'agility': monster.agility,
+        'intuition': monster.intuition,
+        'silver_min': monster.silver_min,
+        'silver_max': monster.silver_max,
+        'exp_min': monster.exp_min,
+        'exp_max': monster.exp_max,
+    }
     BattleParticipant.objects.create(
-        battle=battle, npc_id=monster_data['id'], team=2,
-        hp_snapshot=monster_data['hp'],
-        stats_snapshot=monster_data
+        battle=battle, npc_id=str(monster.id), team=2,
+        hp_snapshot=monster.hp,
+        stats_snapshot=monster_stats
     )
 
     return redirect('combat', battle_id=battle.id)
@@ -98,13 +111,14 @@ def combat_turn(request, battle_id):
 
         if player_part.hp_snapshot > 0:
             player_part.is_winner = True
-            # Rewards
-            gold_gain = random.randint(monster_part.stats_snapshot['gold_min'], monster_part.stats_snapshot['gold_max'])
-            exp_gain = monster_part.stats_snapshot['exp']
-            request.user.silver += gold_gain
+            # Random Rewards
+            silver_gain = random.randint(monster_part.stats_snapshot['silver_min'], monster_part.stats_snapshot['silver_max'])
+            exp_gain = random.randint(monster_part.stats_snapshot['exp_min'], monster_part.stats_snapshot['exp_max'])
+
+            request.user.silver += silver_gain
             request.user.monster_wins += 1
             request.user.add_exp(exp_gain)
-            result_msg = f"Победа! Получено {gold_gain} серебра и {exp_gain} опыта."
+            result_msg = f"Победа! Получено {silver_gain} серебра и {exp_gain} опыта."
         else:
             request.user.monster_losses += 1
             request.user.current_hp = 1

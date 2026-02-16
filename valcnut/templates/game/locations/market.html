@@ -2,19 +2,20 @@
 
 {% block location_title %}{{ title }}{% endblock %}
 
-{% block location_content %}
-<div class="market-wrapper" style="position: relative;">
-    <div style="position: absolute; right: 0; top: -50px;">
-        <a href="{% url 'location' 'central_square' %}" style="background: #8b0000; color: #fff; text-decoration: none; padding: 5px 15px; border-radius: 5px; font-weight: bold;">Выйти из магазина</a>
-    </div>
-
-    <div class="market-filters" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-        <a href="{% url 'market' %}" class="filter-btn {% if not current_cat %}active{% endif %}">Все</a>
+{% block right_nav %}
+    <div class="market-filters" style="display: flex; flex-direction: column; gap: 5px;">
+        <h4 style="margin: 0 0 10px 0; color: #d4af37; border-bottom: 1px solid #444;">Категории</h4>
+        <a href="{% url 'market' %}" class="filter-btn {% if not request.GET.category %}active{% endif %}">Все товары</a>
         {% for cat_id, cat_name in categories %}
             <a href="{% url 'market' %}?category={{ cat_id }}" class="filter-btn {% if request.GET.category == cat_id %}active{% endif %}">{{ cat_name }}</a>
         {% endfor %}
+        <hr style="border: 0; border-top: 1px solid #333; width: 100%; margin: 10px 0;">
+        <a href="{% url 'location' 'central_square' %}" style="background: #8b0000; color: #fff; text-align: center;">Выйти из магазина</a>
     </div>
+{% endblock %}
 
+{% block location_content %}
+<div class="market-wrapper">
     <div class="items-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
         {% for item in items %}
         <div class="item-card" style="background: #222; border: 1px solid #444; padding: 15px; border-radius: 5px; text-align: center;">

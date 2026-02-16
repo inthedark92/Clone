@@ -2,6 +2,15 @@
 
 {% block location_title %}{{ title }}{% endblock %}
 
+{% block right_nav %}
+    <div class="commission-nav" style="display: flex; flex-direction: column; gap: 5px;">
+        <h4 style="margin: 0 0 10px 0; color: #d4af37; border-bottom: 1px solid #444;">Комиссионка</h4>
+        <a href="{% url 'inventory' %}" class="filter-btn">Продать вещи</a>
+        <hr style="border: 0; border-top: 1px solid #333; width: 100%; margin: 10px 0;">
+        <a href="{% url 'location' 'central_square' %}" style="background: #8b0000; color: #fff; text-align: center;">Выйти</a>
+    </div>
+{% endblock %}
+
 {% block location_content %}
 <div class="commission-wrapper">
     <p>Здесь игроки торгуют друг с другом. Вы можете найти редкие вещи или выставить свои на продажу из Инвентаря.</p>
@@ -25,13 +34,10 @@
         {% endfor %}
     </div>
 
-    <div style="margin-top: 30px; border-top: 1px solid #444; padding-top: 20px; text-align: center;">
-        <a href="{% url 'location' 'central_square' %}" class="nav-btn">Вернуться на площадь</a>
-    </div>
 </div>
 
 <style>
-.nav-btn { background: #333; color: #d4c5a1; padding: 10px 20px; text-decoration: none; border: 1px solid #555; border-radius: 5px; }
-.nav-btn:hover { background: #444; border-color: #8b0000; }
+.filter-btn { background: #333; color: #ccc; text-decoration: none; padding: 5px 10px; border-radius: 3px; border: 1px solid #444; font-size: 12px; text-align: center; }
+.filter-btn:hover { background: #444; }
 </style>
 {% endblock %}

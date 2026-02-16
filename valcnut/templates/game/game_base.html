@@ -87,17 +87,19 @@
         </main>
 
         <nav id="right-nav">
+            {% block right_nav %}
             <a href="{% url 'character' %}">Персонаж</a>
             <a href="{% url 'inventory' %}">Инвентарь</a>
-            <a href="{% url 'location' 'central_square' %}">Центральная Площадь</a>
-            <a href="{% url 'location' 'arena' %}">Арена</a>
-            <a href="{% url 'tavern' %}">Таверна "У Одина"</a>
-            <a href="{% url 'location' 'market' %}">Рынок</a>
-            <a href="{% url 'location' 'clan_hall' %}">Зал Кланов</a>
-            <a href="{% url 'location' 'forest' %}">Темный Лес</a>
-            <a href="{% url 'bank' %}">Банк Вальхаллы</a>
-            <a href="{% url 'location' 'forge' %}">Кузница</a>
-            <a href="{% url 'location' 'mine' %}">Шахта</a>
+            <hr style="border: 0; border-top: 1px solid #333; width: 100%;">
+            {% if nav %}
+                {% for target, label in nav %}
+                    <a href="{% url 'location' target %}">{{ label }}</a>
+                {% endfor %}
+            {% else %}
+                <a href="{% url 'location' 'central_square' %}">Центральная Площадь</a>
+                <a href="{% url 'location' 'castle' %}">Древний Замок</a>
+            {% endif %}
+            {% endblock %}
         </nav>
     </div>
 
@@ -122,12 +124,20 @@
                 <div id="chat-log" style="flex: 1;"></div>
                 <div id="system-log"></div>
             </div>
-            <div class="chat-controls" style="display: flex; gap: 5px; margin-bottom: 5px;">
+            <div class="chat-controls" style="display: flex; gap: 5px; margin-bottom: 5px; align-items: center;">
                 <div id="private-recipient-display" style="display: none; background: #8b0000; padding: 2px 5px; font-size: 12px; align-items: center;">
                     Кому: <span id="recipient-name"></span>
                     <span id="clear-recipient" style="margin-left: 5px; cursor: pointer;">×</span>
                 </div>
                 <input type="text" id="chat-input" placeholder="Сообщение..." style="flex: 1;">
+                <div class="chat-buttons-right" style="display: flex; gap: 2px;">
+                    <button class="chat-btn" id="chat-send-btn" title="Отправить">Отправить</button>
+                    <button class="chat-btn" title="Смайлы">😊</button>
+                    <button class="chat-btn" title="Друзья">👥</button>
+                    <button class="chat-btn" title="Сделки" onclick="location.href='{% url 'deals' %}'">🤝</button>
+                    <button class="chat-btn" title="Модерация" id="mod-panel-btn" onclick="location.href='{% url 'mod_panel' %}'">⚖️</button>
+                    <button class="chat-btn" title="Клан">🛡️</button>
+                </div>
             </div>
         </div>
         <div id="online-container">
@@ -234,20 +244,27 @@
         };
 
 
+        function sendMessage() {
+            const message = chatInput.value;
+            if (!message) return;
+            const payload = {
+                'message': message,
+                'channel': currentChannel
+            };
+            if (currentChannel === 'private' && privateRecipient) {
+                payload['recipient'] = privateRecipient;
+            }
+            chatSocket.send(JSON.stringify(payload));
+            chatInput.value = '';
+        }
+
         chatInput.onkeyup = function(e) {
             if (e.keyCode === 13) {
-                const message = chatInput.value;
-                const payload = {
-                    'message': message,
-                    'channel': currentChannel
-                };
-                if (currentChannel === 'private' && privateRecipient) {
-                    payload['recipient'] = privateRecipient;
-                }
-                chatSocket.send(JSON.stringify(payload));
-                chatInput.value = '';
+                sendMessage();
             }
         };
+
+        document.getElementById('chat-send-btn').onclick = sendMessage;
 
         document.querySelectorAll('.chat-tab').forEach(tab => {
             if (tab.id === 'system-toggle') {
@@ -309,17 +326,33 @@
             document.getElementById('private-recipient-display').style.display = 'none';
         };
 
-        // Update online list to support context menu
+        // Update online list with icons and context menu
         function updateOnlineList(users) {
             onlineList.innerHTML = '';
             users.forEach(u => {
                 const uDiv = document.createElement('div');
                 uDiv.setAttribute('data-player-name', u.username);
+                uDiv.setAttribute('data-player-id', u.id);
                 uDiv.style.cursor = 'context-menu';
-                uDiv.innerHTML = `${u.username} [${u.level}]`;
+                uDiv.style.display = 'flex';
+                uDiv.style.justifyContent = 'space-between';
+                uDiv.style.padding = '2px 0';
+
+                uDiv.innerHTML = `
+                    <span>${u.username} | ${u.level}</span>
+                    <span>
+                        <span class="chat-icon" title="Личное сообщение" style="cursor:pointer;" onclick="openPrivate('${u.username}')">✉️</span>
+                        <span class="info-icon" title="Инфо" style="cursor:pointer;" onclick="window.open('/character/${u.id}/', '_blank')">📜</span>
+                    </span>
+                `;
                 onlineList.appendChild(uDiv);
             });
         }
+
+        window.openPrivate = function(username) {
+            contextTarget = username;
+            document.getElementById('menu-send-msg').click();
+        };
 
         document.querySelectorAll('.online-tab').forEach(tab => {
             tab.onclick = () => {

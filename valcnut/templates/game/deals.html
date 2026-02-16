@@ -1,0 +1,17 @@
+{% extends 'game/game_base.html' %}
+{% block location_title %}Ваши Сделки{% endblock %}
+{% block location_content %}
+<div class="deals-list">
+    {% if deals %}
+        {% for deal in deals %}
+            <div style="background: #222; padding: 10px; margin-bottom: 10px; border: 1px solid #444;">
+                <p>Сделка #{{ deal.id }} - {{ deal.initiator.username }} vs {{ deal.target.username }}</p>
+                <p>Статус: {{ deal.get_status_display }}</p>
+                <a href="#" class="btn">Просмотреть (WIP)</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>У вас пока нет активных предложений обмена.</p>
+    {% endif %}
+</div>
+{% endblock %}

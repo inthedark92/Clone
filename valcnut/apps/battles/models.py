@@ -1,6 +1,22 @@
 from django.db import models
 from django.conf import settings
 
+class Monster(models.Model):
+    name = models.CharField(max_length=100)
+    level = models.IntegerField(default=0)
+    hp = models.IntegerField(default=50)
+    strength = models.IntegerField(default=3)
+    agility = models.IntegerField(default=3)
+    intuition = models.IntegerField(default=3)
+
+    silver_min = models.IntegerField(default=5)
+    silver_max = models.IntegerField(default=10)
+    exp_min = models.IntegerField(default=10)
+    exp_max = models.IntegerField(default=20)
+
+    def __str__(self):
+        return f"{self.name} [{self.level}]"
+
 class Battle(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Ожидание'),

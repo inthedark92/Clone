@@ -43,3 +43,208 @@ February 15, 2026 - 17:21:09
 Django version 6.0.2, using settings 'valcnut.settings'
 Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
 Quit the server with CONTROL-C.
+/app/valcnut/apps/users/migrations/0001_initial.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 17:24:00
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/core/migrations/0001_initial.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 17:59:56
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/core/views.py changed, reloading.
+Performing system checks...
+
+
+You have 25 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, battles, contenttypes, core, items, sessions, users.
+Run 'python manage.py migrate' to apply them.
+February 15, 2026 - 18:00:53
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/users/urls.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:02:13
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/users/views.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:02:48
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/core/consumers.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:02:51
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/core/models.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:03:06
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/battles/monsters.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:04:26
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/battles/views.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:04:34
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/items/models.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:04:37
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/items/models.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:07:55
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/core/views.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:08:02
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/core/views.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:09:03
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+/app/valcnut/apps/core/urls.py changed, reloading.
+Performing system checks...
+
+February 15, 2026 - 18:09:06
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/app/valcnut/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+Performing system checks...
+
+February 15, 2026 - 18:09:12
+Django version 6.0.2, using settings 'valcnut.settings'
+Starting ASGI/Daphne version 4.2.1 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.

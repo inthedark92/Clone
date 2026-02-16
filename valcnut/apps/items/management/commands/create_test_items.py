@@ -30,6 +30,7 @@ class Command(BaseCommand):
             {'name': 'Тестовый Свиток', 'item_type': 'scroll', 'category': 'scrolls', 'price_silver': 1},
             {'name': 'Тестовый Квестовый Предмет', 'item_type': 'quest', 'category': 'quest', 'price_silver': 1},
             {'name': 'Тестовый Подарок', 'item_type': 'gift', 'category': 'gifts', 'price_silver': 1},
+            {'name': 'Тестовая всячина', 'item_type': 'misc', 'category': 'quest', 'price_silver': 1},
         ]
 
         for data in test_data:

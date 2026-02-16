@@ -18,6 +18,7 @@ class Item(models.Model):
         ('scroll', 'Свиток'),
         ('quest', 'Квестовый предмет'),
         ('gift', 'Подарок'),
+        ('misc', 'Разное'),
     )
     CATEGORY_CHOICES = (
         ('equipment', 'Экипировка'),
@@ -49,6 +50,7 @@ class Item(models.Model):
 
     price_gold = models.IntegerField(default=0)
     price_silver = models.IntegerField(default=0)
+    durability_max = models.IntegerField(default=100)
 
     def __str__(self):
         return self.name
@@ -65,6 +67,11 @@ class InventoryItem(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.item.name} (+{self.enhancement_level})"
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.durability_max = self.item.durability_max
+        super().save(*args, **kwargs)
 
     @property
     def is_active(self):
