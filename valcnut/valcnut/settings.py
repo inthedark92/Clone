@@ -28,6 +28,10 @@ INSTALLED_APPS = [
     'apps.battles',
     'apps.items',
     'apps.core',
+    'apps.quests',
+    'apps.mail',
+    'apps.clans',
+    'apps.skills',
 ]
 
 MIDDLEWARE = [
@@ -62,12 +66,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'valcnut.wsgi.application'
 ASGI_APPLICATION = 'valcnut.asgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.getenv('POSTGRES_NAME'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_NAME'),
+            'USER': os.getenv('POSTGRES_USER'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+            'HOST': os.getenv('POSTGRES_HOST', 'db'),
+            'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

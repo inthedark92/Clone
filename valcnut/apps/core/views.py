@@ -288,6 +288,10 @@ def deals_view(request):
     return render(request, 'game/deals.html', {'deals': deals})
 
 @login_required
+def map_view(request):
+    return render(request, 'game/map.html', {'title': 'Карта Мира'})
+
+@login_required
 def mod_panel_view(request):
     if request.user.role not in ['moderator', 'admin']:
         messages.error(request, "У вас нет прав доступа к этой панели.")

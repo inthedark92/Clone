@@ -17,6 +17,7 @@ urlpatterns = [
     path('deals/remove_item/<int:deal_id>/<int:deal_item_id>/', views.deal_remove_item, name='deal_remove_item'),
     path('deals/accept/<int:deal_id>/', views.deal_accept, name='deal_accept'),
     path('deals/cancel/<int:deal_id>/', views.deal_cancel, name='deal_cancel'),
+    path('map/', views.map_view, name='map'),
     path('mod_panel/', views.mod_panel_view, name='mod_panel'),
     path('<slug:slug>/', views.location_view, name='location'),
 ]

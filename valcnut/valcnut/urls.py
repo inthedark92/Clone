@@ -19,4 +19,8 @@ urlpatterns = [
     path('game/items/', include('apps.items.urls')),
     path('game/users/', include('apps.users.urls')),
     path('game/battles/', include('apps.battles.urls')),
+    path('game/quests/', include('apps.quests.urls')),
+    path('game/mail/', include('apps.mail.urls')),
+    path('game/clans/', include('apps.clans.urls')),
+    path('game/skills/', include('apps.skills.urls')),
 ]

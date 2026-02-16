@@ -47,9 +47,20 @@
                         <label class="zone-label"><input type="radio" name="block" value="legs"> Ноги</label>
                     </div>
                 </div>
-                <button type="submit" class="btn" style="width: 100%; margin-top: 20px; font-size: 20px;">Сделать ход!</button>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 20px; font-size: 20px; background: #8b0000;">Сделать ход!</button>
+                <div class="extra-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px;">
+                    <button type="button" class="btn-sm" onclick="alert('Автобой в разработке')">Авто</button>
+                    <button type="button" class="btn-sm" onclick="alert('Навыки заблокированы')">Навык</button>
+                    <button type="button" class="btn-sm" onclick="alert('Зелья отсутствуют')">Зелье</button>
+                    <button type="button" class="btn-sm" style="color: #666;" onclick="location.href='{% url 'game_index' %}'">Сдаться</button>
+                </div>
             </form>
         </div>
+
+        <style>
+            .btn-sm { background: #333; color: #ccc; border: 1px solid #444; padding: 5px; cursor: pointer; font-size: 11px; }
+            .btn-sm:hover { background: #444; }
+        </style>
 
         <!-- Log -->
         <div class="log-box" style="width: 300px; background: #111; padding: 10px; border: 1px solid #444; height: 250px; overflow-y: scroll; font-size: 13px;">
